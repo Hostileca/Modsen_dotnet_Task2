@@ -1,0 +1,2 @@
+﻿dotnet ef migrations add onCreate --verbose --project DataAccessLayer --startup-project PresentationLayer
+dotnet ef database update --verbose --project DataAccessLayer --startup-project PresentationLayer

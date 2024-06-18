@@ -11,5 +11,8 @@ namespace DataAccessLayer.Models
         public Guid Guid { get; set; }
         public string UserName { get; set; }
         public string HashedPassword { get; set; }
+        public ICollection<Order> Orders { get; set; }
+        public Guid RoleGuid { get; set; }
+        public Role Role { get; set; }
     }
 }
