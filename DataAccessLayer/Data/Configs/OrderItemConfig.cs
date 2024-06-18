@@ -11,7 +11,7 @@ namespace DataAccessLayer.Data.Configs
             builder.HasKey(oi => new { oi.OrderGuid, oi.ProductGuid }); 
 
             builder.HasOne(oi => oi.Order)
-                   .WithMany(o => o.Items)
+                   .WithMany(o => o.OrderItems)
                    .HasForeignKey(oi => oi.OrderGuid)
                    .IsRequired();
 

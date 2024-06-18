@@ -1,10 +1,9 @@
 ﻿using DataAccessLayer.Models;
 
-namespace BusinessLogicLayer.Dtos.Product
+namespace BusinessLogicLayer.Dtos.Products
 {
-    public class ProductReadDto
+    public class ProductUpdateDto
     {
-        public Guid Guid { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }

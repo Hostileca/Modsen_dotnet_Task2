@@ -15,7 +15,7 @@ namespace DataAccessLayer.Data.Configs
                    .HasForeignKey(o => o.UserGuid)
                    .IsRequired(); 
 
-            builder.HasMany(o => o.Items)
+            builder.HasMany(o => o.OrderItems)
                    .WithOne()
                    .HasForeignKey(oi => oi.OrderGuid)
                    .OnDelete(DeleteBehavior.Cascade);
