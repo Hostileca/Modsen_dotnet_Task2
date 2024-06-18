@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccessLayer.Data.Configs
 {
-    internal class CategoryConfig : IEntityTypeConfiguration<Category>
+    public class CategoryConfig : IEntityTypeConfiguration<Category>
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
@@ -16,8 +16,7 @@ namespace DataAccessLayer.Data.Configs
 
             builder.HasMany(c => c.Products)
                    .WithOne(p => p.Category)
-                   .HasForeignKey(p => p.CategoryId)
-                   .IsRequired();
+                   .HasForeignKey(p => p.CategoryId);
         }
     }
 }

@@ -17,19 +17,7 @@ namespace DataAccessLayer.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var categoryConfig = new CategoryConfig();
-            var orderConfig = new OrderConfig();
-            var orderItemConfig = new OrderItemConfig();
-            var productConfig = new ProductConfig();
-            var roleConfig = new RoleConfig();
-            var userConfig = new UserConfig();
-
-            modelBuilder.ApplyConfiguration(categoryConfig);
-            modelBuilder.ApplyConfiguration(orderConfig);
-            modelBuilder.ApplyConfiguration(orderItemConfig);
-            modelBuilder.ApplyConfiguration(productConfig);
-            modelBuilder.ApplyConfiguration(roleConfig);
-            modelBuilder.ApplyConfiguration(userConfig);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
             base.OnModelCreating(modelBuilder);
         }

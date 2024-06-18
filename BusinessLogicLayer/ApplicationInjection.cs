@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
+using BusinessLogicLayer.Profiles;
 
 namespace BusinessLogicLayer
 {
@@ -13,7 +14,8 @@ namespace BusinessLogicLayer
         {
             services
                 .ServicesConfigure()
-                .DbConfigure(configuration);
+                .DbConfigure(configuration)
+                .AutoMapperConfigure();
 
             return services;
         }
@@ -29,6 +31,20 @@ namespace BusinessLogicLayer
             var sqlConnectionBuilder = new SqlConnectionStringBuilder();
             sqlConnectionBuilder.ConnectionString = configuration.GetConnectionString("SQLDbConnection");
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(sqlConnectionBuilder.ConnectionString));
+            return services;
+        }
+
+        private static IServiceCollection AutoMapperConfigure(this IServiceCollection services)
+        {
+            services.AddAutoMapper(builder =>
+            {
+                builder.AddProfile(typeof(CategoryMappingProfile));
+                builder.AddProfile(typeof(OrderItemMappingProfile));
+                builder.AddProfile(typeof(OrderItemMappingProfile));
+                builder.AddProfile(typeof(ProductMappingProfile));
+                builder.AddProfile(typeof(RoleMappingProfile));
+                builder.AddProfile(typeof(UserMappingProfile));
+            });
             return services;
         }
     }
