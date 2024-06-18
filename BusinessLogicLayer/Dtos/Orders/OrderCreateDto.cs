@@ -1,10 +1,10 @@
-﻿using DataAccessLayer.Models;
+﻿using BusinessLogicLayer.Dtos.OrderItems;
+using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Dtos.Orders
 {
     public class OrderCreateDto
     {
-        public User User { get; set; }
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public ICollection<OrderItemCreateDto> OrderItems { get; set; }
     }
 }

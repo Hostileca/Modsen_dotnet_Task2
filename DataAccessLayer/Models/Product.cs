@@ -2,8 +2,8 @@
 {
     public class Product
     {
-        public Guid Guid { get; set; }
-        public Guid CategoryGuid { get; set; }
+        public Guid Id { get; set; }
+        public Guid CategoryId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }

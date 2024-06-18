@@ -8,16 +8,16 @@ namespace DataAccessLayer.Data.Configs
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasKey(o => o.Guid);
+            builder.HasKey(o => o.Id);
 
             builder.HasOne(o => o.User)
                    .WithMany(u => u.Orders)
-                   .HasForeignKey(o => o.UserGuid)
+                   .HasForeignKey(o => o.UserId)
                    .IsRequired(); 
 
             builder.HasMany(o => o.OrderItems)
                    .WithOne()
-                   .HasForeignKey(oi => oi.OrderGuid)
+                   .HasForeignKey(oi => oi.OrderId)
                    .OnDelete(DeleteBehavior.Cascade);
         }
     }

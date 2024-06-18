@@ -1,14 +1,12 @@
-﻿using DataAccessLayer.Models;
+﻿using BusinessLogicLayer.Dtos.Roles;
+using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Dtos.Users
 {
     public class UserReadDto
     {
-        public Guid Guid { get; set; }
-        public Guid RoleGuid { get; set; }
+        public Guid Id { get; set; }
         public string UserName { get; set; }
-        public string HashedPassword { get; set; }
-        public Role Role { get; set; }
-        public ICollection<Order> Orders { get; set; }
+        public RoleReadDto Role { get; set; }
     }
 }
