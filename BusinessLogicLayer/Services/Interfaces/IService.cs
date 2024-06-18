@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Interfaces
 {
     public interface IService<TEntity, TEntityReadDto, TEntityCreateDto,TEntityUpdateDto>
     {
-        Task<IEnumerable<TEntityReadDto>> GetAll();
-        TEntityReadDto GetByPredicate(Expression<Func<TEntityReadDto, bool>> predicate);
-        Task CreateItem(TEntityCreateDto itemCreateDto);
-        Task UpdateItem(TEntityUpdateDto itemUpdateDto);
-        Task DeleteItem(TEntity item);
-        void SaveChanges();
+        Task<IEnumerable<TEntityReadDto>> GetAllAsync();
+        Task<TEntityReadDto> GetByPredicateAsync(Expression<Func<TEntityReadDto, bool>> predicate);
+        Task CreateItemAsync(TEntityCreateDto itemCreateDto);
+        Task UpdateItemAsync(TEntityUpdateDto itemUpdateDto);
+        Task DeleteItemAsync(TEntity item);
+        Task SaveChangesAsync();
     }
 }

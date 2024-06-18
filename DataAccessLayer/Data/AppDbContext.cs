@@ -1,5 +1,5 @@
+﻿using DataAccessLayer.Models;
 ﻿using DataAccessLayer.Data.Configs;
-using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Data

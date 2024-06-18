@@ -8,7 +8,7 @@ namespace DataAccessLayer.Data.Configs
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
-            builder.HasKey(u => u.Guid);
+            builder.HasKey(u => u.Id);
 
             builder.Property(u => u.UserName)
                    .IsRequired()

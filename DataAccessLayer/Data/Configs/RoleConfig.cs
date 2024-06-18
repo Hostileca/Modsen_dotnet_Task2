@@ -1,11 +1,6 @@
 ﻿using DataAccessLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccessLayer.Data.Configs
 {
@@ -13,7 +8,7 @@ namespace DataAccessLayer.Data.Configs
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
-            builder.HasKey(r => r.Guid);
+            builder.HasKey(r => r.Id);
 
             builder.Property(r => r.Name)
                    .IsRequired()
@@ -21,7 +16,7 @@ namespace DataAccessLayer.Data.Configs
 
             builder.HasMany(r => r.Users)
                    .WithOne(u => u.Role)
-                   .HasForeignKey(u => u.RoleGuid)
+                   .HasForeignKey(u => u.RoleId)
                    .IsRequired();
         }
     }
