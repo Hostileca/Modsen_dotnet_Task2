@@ -1,38 +1,34 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using DataAccessLayer.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer
 {
     public static class ApplicationInjection
     {
         public static IServiceCollection AddApplication
-            (this IServiceCollection services)
+            (this IServiceCollection services, IConfiguration configuration)
         {
             services
-               // .ValidationConfigure()
-                .ServicesConfigure();
+                .ServicesConfigure()
+                .DbConfigure(configuration);
 
             return services;
         }
 
-        //private static IServiceCollection ValidationConfigure(this IServiceCollection services)
-        //{
-        //    services
-        //        .AddValidatorsFromAssembly(Assembly.GetExecutingAssembly())
-        //        .AddFluentValidationAutoValidation(cfg =>
-        //        {
-        //            cfg.DisableBuiltInModelValidation = true;
-        //            cfg.ValidationStrategy = ValidationStrategy.All;
-        //            cfg.EnableCustomBindingSourceAutomaticValidation = true;
-        //            cfg.OverrideDefaultResultFactoryWith<CustomValidationResultFactory>();
-        //        });
-
-        //    return services;
-        //}
         private static IServiceCollection ServicesConfigure(this IServiceCollection services)
         {
-            //services
-            //    .AddScoped<IServiceService, ServiceService>()
 
+            return services;
+        }
+
+        private static IServiceCollection DbConfigure(this IServiceCollection services, IConfiguration configuration)
+        {
+            var sqlConnectionBuilder = new SqlConnectionStringBuilder();
+            sqlConnectionBuilder.ConnectionString = configuration.GetConnectionString("SQLDbConnection");
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(sqlConnectionBuilder.ConnectionString));
             return services;
         }
     }

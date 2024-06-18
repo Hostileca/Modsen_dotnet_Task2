@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Models
 {
-    public class Order
+    public class Role
     {
         public Guid Guid { get; set; }
-        public Guid UserGuid { get; set; }
-        public User User { get; set; }
-        public ICollection<OrderItem> Items { get; set; }
+        public Roles Name { get; set; }
+        public ICollection<User> Users { get; set; }
     }
+
 }
