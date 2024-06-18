@@ -1,7 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using BusinessLogicLayer.Services.Interfaces;
-using DataAccessLayer.Models;
-using BusinessLogicLayer.Dtos.Product;
 
 namespace PresentationLayer.Controllers
 {
