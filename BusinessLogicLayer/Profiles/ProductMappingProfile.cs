@@ -4,9 +4,9 @@ using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Profiles
 {
-    internal class ProductMappingProfile : Profile
+    public class ProductMappingProfile : Profile
     {
-        ProductMappingProfile() 
+        public ProductMappingProfile()
         {
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();

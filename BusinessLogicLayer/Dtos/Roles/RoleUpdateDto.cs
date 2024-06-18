@@ -3,6 +3,6 @@ namespace BusinessLogicLayer.Dtos.Roles
 {
     public class RoleUpdateDto
     {
-        public DataAccessLayer.Models.Roles Name { get; set; }
+        public string Name { get; set; }
     }
 }

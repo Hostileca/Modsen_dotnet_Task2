@@ -19,7 +19,7 @@ namespace DataAccessLayer.Data.Configs
                    .HasForeignKey(oi => oi.ProductId);
 
             builder.Property(oi => oi.Amount)
-                   .IsRequired(); 
+                   .IsRequired();
         }
     }
 }

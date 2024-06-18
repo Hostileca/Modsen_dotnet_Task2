@@ -4,11 +4,11 @@ using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Profiles
 {
-    internal class CategoryMappingProfile : Profile
+    public class CategoryMappingProfile : Profile
     {
-        CategoryMappingProfile()
+        public CategoryMappingProfile()
         {
-            CreateMap<CategoryReadDto, Category>();
+            CreateMap<CategoryCreateDto, Category>();
             CreateMap<CategoryUpdateDto, Category>();
             CreateMap<Category, CategoryReadDto>();
         }

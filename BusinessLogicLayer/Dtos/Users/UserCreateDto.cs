@@ -1,6 +1,4 @@
-﻿using DataAccessLayer.Models;
-
-namespace BusinessLogicLayer.Dtos.Users
+﻿namespace BusinessLogicLayer.Dtos.Users
 {
     public class UserCreateDto
     {

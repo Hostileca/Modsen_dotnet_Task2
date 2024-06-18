@@ -4,9 +4,9 @@ using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Profiles
 {
-    internal class RoleMappingProfile : Profile
+    public class RoleMappingProfile : Profile
     {
-        RoleMappingProfile()
+        public RoleMappingProfile()
         {
             CreateMap<RoleCreateDto, Role>();
             CreateMap<RoleUpdateDto, Role>();

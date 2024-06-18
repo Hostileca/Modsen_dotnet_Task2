@@ -4,9 +4,9 @@ using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Profiles
 {
-    internal class OrderMappingProfile : Profile
+    public class OrderMappingProfile : Profile
     {
-        OrderMappingProfile()
+        public OrderMappingProfile()
         {
             CreateMap<OrderCreateDto, Order>();
             CreateMap<Order, OrderReadDto>();
