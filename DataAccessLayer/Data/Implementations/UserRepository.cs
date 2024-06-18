@@ -17,14 +17,16 @@ namespace DataAccessLayer.Data.Implementations
         public async Task<IEnumerable<User>> GetAllAsync()
         {
             return await _context.Users
-                .Include(c => c.Products)
+                .Include(c => c.Role)
+                .Include(c => c.Orders)
                 .ToListAsync();
         }
 
         public async Task<User> GetByPredicateAsync(Expression<Func<User, bool>> predicate)
         {
             return await _context.Users
-                .Include(c => c.Products)
+                .Include(c => c.Role)
+                .Include(c => c.Orders)
                 .FirstOrDefaultAsync(predicate);
         }
 

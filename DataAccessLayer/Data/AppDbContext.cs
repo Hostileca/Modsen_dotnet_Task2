@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Models;
+﻿using DataAccessLayer.Data.Configs;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Data
@@ -12,10 +13,24 @@ namespace DataAccessLayer.Data
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<Role> Roles => Set<Role>(); 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //создавать отдельные файлы конфигураций!!!
+            var categoryConfig = new CategoryConfig();
+            var orderConfig = new OrderConfig();
+            var orderItemConfig = new OrderItemConfig();
+            var productConfig = new ProductConfig();
+            var roleConfig = new RoleConfig();
+            var userConfig = new UserConfig();
+
+            modelBuilder.ApplyConfiguration(categoryConfig);
+            modelBuilder.ApplyConfiguration(orderConfig);
+            modelBuilder.ApplyConfiguration(orderItemConfig);
+            modelBuilder.ApplyConfiguration(productConfig);
+            modelBuilder.ApplyConfiguration(roleConfig);
+            modelBuilder.ApplyConfiguration(userConfig);
+
             base.OnModelCreating(modelBuilder);
         }
     }

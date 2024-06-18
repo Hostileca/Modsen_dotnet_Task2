@@ -18,6 +18,7 @@ namespace DataAccessLayer.Data.Implementations
         {
             return await _context.Orders
                 .Include(c => c.OrderItems)
+                .Include(c => c.User)
                 .ToListAsync();
         }
 
@@ -25,6 +26,7 @@ namespace DataAccessLayer.Data.Implementations
         {
             return await _context.Orders
                 .Include(c => c.OrderItems)
+                .Include(c => c.User)
                 .FirstOrDefaultAsync(predicate);
         }
 

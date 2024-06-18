@@ -8,11 +8,11 @@ namespace PresentationLayer
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            ApplicationInjection.AddApplication(builder.Services, builder.Configuration);
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            ApplicationInjection.AddApplication(builder.Services);
 
             var app = builder.Build();
 
