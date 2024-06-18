@@ -9,11 +9,11 @@ namespace PresentationLayer.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IService<Product, ProductReadDto, ProductCreateDto, ProductUpdateDto> _productsService;
-        public ProductsController(IService<Product, ProductReadDto, ProductCreateDto, ProductUpdateDto> productsService)
-        {
-            _productsService = productsService;
-        }
+        //private readonly IService<Product, ProductReadDto, ProductCreateDto, ProductUpdateDto> _productsService;
+        //public ProductsController(IService<Product, ProductReadDto, ProductCreateDto, ProductUpdateDto> productsService)
+        //{
+        //    _productsService = productsService;
+        //}
 
     }
 }
