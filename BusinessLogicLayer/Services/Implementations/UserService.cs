@@ -6,6 +6,8 @@ using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 using System.Linq.Expressions;
 using System.Text;
+using BusinessLogicLayer.Dtos.Products;
+using DataAccessLayer.Data.Implementations;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -29,11 +31,8 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var user = _mapper.Map<User>(userCreateDto);
 
-            var existingRole = await _roleRepository.GetByIdAsync(userCreateDto.RoleId);
-            if (existingRole == null)
-                throw new KeyNotFoundException($"Role not found with id: {userCreateDto.RoleId}");
-
-            user.Role = existingRole;
+            user.HashedPassword = HashPassword(userCreateDto.Password);
+            //user.Role = 
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
@@ -91,13 +90,11 @@ namespace BusinessLogicLayer.Services.Implementations
             if (existingRole == null)
                 throw new KeyNotFoundException($"Role not found with id: {userUpdateDto.RoleId}");
 
-            existingUser.UserName = userUpdateDto.UserName;
             existingUser.HashedPassword = HashPassword(userUpdateDto.Password);
-            existingUser.RoleId = userUpdateDto.RoleId;
 
+            var newUser = _mapper.Map(userUpdateDto, existingUser);
             await _userRepository.SaveChangesAsync();
-
-            return _mapper.Map<UserReadDto>(existingUser);
+            return _mapper.Map<UserReadDto>(newUser);
         }
 
         private string HashPassword(string password)

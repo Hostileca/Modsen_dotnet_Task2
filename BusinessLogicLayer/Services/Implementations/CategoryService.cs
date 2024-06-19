@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Categories;
+using BusinessLogicLayer.Dtos.Roles;
 using BusinessLogicLayer.Services.Interfaces;
+using DataAccessLayer.Data.Implementations;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 using System.Linq.Expressions;
@@ -79,10 +81,9 @@ namespace BusinessLogicLayer.Services.Implementations
             if (existingCategory == null)
                 throw new KeyNotFoundException($"Category not found with id: {categoryUpdateDto.Id}");
 
-            existingCategory.Name = categoryUpdateDto.Name;
+            var newCategory = _mapper.Map(categoryUpdateDto, existingCategory);
             await _categoryRepository.SaveChangesAsync();
-
-            return _mapper.Map<CategoryReadDto>(existingCategory);
+            return _mapper.Map<CategoryReadDto>(newCategory);
         }
     }
 }

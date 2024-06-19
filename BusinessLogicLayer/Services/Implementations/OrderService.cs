@@ -25,12 +25,6 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var order = _mapper.Map<Order>(orderCreateDto);
 
-            foreach (var orderItemDto in orderCreateDto.OrderItems)
-            {
-                var orderItem = _mapper.Map<OrderItem>(orderItemDto);
-                order.OrderItems.Add(orderItem);
-            }
-
             await _orderRepository.AddAsync(order);
             await _orderRepository.SaveChangesAsync();
 

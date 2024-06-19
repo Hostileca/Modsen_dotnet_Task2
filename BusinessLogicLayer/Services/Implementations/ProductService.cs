@@ -89,14 +89,11 @@ namespace BusinessLogicLayer.Services.Implementations
             if (existingCategory == null)
                 throw new KeyNotFoundException($"Category not found with id: {productUpdateDto.CategoryId}");
 
-            existingProduct.Name = productUpdateDto.Name;
-            existingProduct.Description = productUpdateDto.Description;
-            existingProduct.Price = productUpdateDto.Price;
             existingProduct.Category = existingCategory;
 
+            var newProduct = _mapper.Map(productUpdateDto, existingProduct);
             await _productRepository.SaveChangesAsync();
-
-            return _mapper.Map<ProductReadDto>(existingProduct);
+            return _mapper.Map<ProductReadDto>(newProduct);
         }
     }
 }

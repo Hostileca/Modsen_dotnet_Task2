@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Roles;
+using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Interfaces;
+using DataAccessLayer.Data.Implementations;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 using System.Linq.Expressions;
@@ -76,11 +78,9 @@ namespace BusinessLogicLayer.Services.Implementations
             if (existingRole == null)
                 throw new KeyNotFoundException($"Role not found with id: {roleUpdateDto.Id}");
 
-            existingRole.Name = roleUpdateDto.Name;
-
+            var newRole = _mapper.Map(roleUpdateDto, existingRole);
             await _roleRepository.SaveChangesAsync();
-
-            return _mapper.Map<RoleReadDto>(existingRole);
+            return _mapper.Map<RoleReadDto>(newRole);
         }
     }
 }
