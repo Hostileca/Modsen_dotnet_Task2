@@ -12,7 +12,6 @@ public class OrderItemCreateValidator : AbstractValidator<OrderItemCreateDto>
             .GreaterThan(0).WithMessage("Amount should be greater than 0");
 
         RuleFor(orderItem => orderItem.ProductId)
-            .NotNull().WithMessage("Product ID should not be null")
-            .NotEmpty().WithMessage("Product ID should not be empty");
+            .IsGuid();
     }
 }
