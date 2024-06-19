@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogicLayer.Dtos.Categories;
 using BusinessLogicLayer.Dtos.OrderItems;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
@@ -84,6 +85,20 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new KeyNotFoundException("Order item not found.");
 
             return _mapper.Map<IEnumerable<OrderItemReadDto>>(orderItems);
+        }
+
+        public async Task<OrderItemReadDto> UpdateOrderItemAsync(OrderItemUpdateDto orderItemUpdateDto)
+        {
+            if (orderItemUpdateDto == null)
+                throw new ArgumentNullException(nameof(orderItemUpdateDto));
+
+            var existingOrderItem = await _orderItemRepository.GetByIdAsync(orderItemUpdateDto.Id);
+            if (existingOrderItem == null)
+                throw new KeyNotFoundException($"Order item not found with id: {orderItemUpdateDto.Id}");
+
+            var newOrderItem = _mapper.Map(orderItemUpdateDto, existingOrderItem);
+            await _orderItemRepository.SaveChangesAsync();
+            return _mapper.Map<OrderItemReadDto>(newOrderItem);
         }
     }
 }
