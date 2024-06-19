@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Roles;
-using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Interfaces;
-using DataAccessLayer.Data.Implementations;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 using System.Linq.Expressions;

@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
-using System.Security.Cryptography;
 using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 using System.Linq.Expressions;
-using System.Text;
-using BusinessLogicLayer.Dtos.Products;
-using DataAccessLayer.Data.Implementations;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -31,7 +27,6 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var user = _mapper.Map<User>(userCreateDto);
 
-            user.HashedPassword = HashPassword(userCreateDto.Password);
             //user.Role = 
 
             await _userRepository.AddAsync(user);
@@ -90,24 +85,9 @@ namespace BusinessLogicLayer.Services.Implementations
             if (existingRole == null)
                 throw new KeyNotFoundException($"Role not found with id: {userUpdateDto.RoleId}");
 
-            existingUser.HashedPassword = HashPassword(userUpdateDto.Password);
-
             var newUser = _mapper.Map(userUpdateDto, existingUser);
             await _userRepository.SaveChangesAsync();
             return _mapper.Map<UserReadDto>(newUser);
-        }
-
-        private string HashPassword(string password)
-        {
-            using (SHA256 sha256Hash = SHA256.Create())
-            {
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(password));
-
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                    builder.Append(bytes[i].ToString("x2"));
-                return builder.ToString();
-            }
         }
     }
 }
