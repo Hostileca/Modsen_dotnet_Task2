@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Text.Json;
 
 namespace PresentationLayer.Middleware
@@ -47,10 +48,11 @@ namespace PresentationLayer.Middleware
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/json+error";
 
-            var errorDetails = new
+            var errorDetails = new ProblemDetails
             {
-                Message = "O-o-ops...",
-                Error = ex.Message,
+                Status = statusCode,
+                Detail = ex.Message,
+                Instance = context.Request.Path
             };
 
             return JsonSerializer.Serialize(errorDetails);

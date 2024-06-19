@@ -95,6 +95,8 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<UserReadDto>(newUser);
         }
 
+
+        //think about it
         private string HashPassword(string password)
         {
             using (SHA256 sha256Hash = SHA256.Create())
