@@ -1,23 +1,14 @@
 ﻿using BusinessLogicLayer.Dtos.Products;
 
-namespace Tests
+namespace Tests.Services
 {
     public class ProductServiceTests
     {
         private readonly Mock<IProductService> _mockProductService;
-        private readonly IMapper _mapper;
 
         public ProductServiceTests()
         {
             _mockProductService = new Mock<IProductService>();
-
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<ProductCreateDto, ProductReadDto>();
-                cfg.CreateMap<ProductUpdateDto, ProductReadDto>();
-            });
-
-            _mapper = mapperConfig.CreateMapper();
         }
 
         [Fact]
@@ -31,8 +22,14 @@ namespace Tests
                 CategoryId = Guid.NewGuid()
             };
 
-            var productReadDto = _mapper.Map<ProductReadDto>(productCreateDto);
-            productReadDto.Id = Guid.NewGuid();
+            var productReadDto = new ProductReadDto
+            {
+                Name = productCreateDto.Name,
+                Description = productCreateDto.Description,
+                Price = productCreateDto.Price,
+                CategoryId = productCreateDto.CategoryId,
+                Id = Guid.NewGuid()
+            };
 
             _mockProductService.Setup(s => s.CreateProductAsync(productCreateDto))
                                .ReturnsAsync(productReadDto);
@@ -42,6 +39,7 @@ namespace Tests
             Assert.NotNull(result);
             Assert.Equal(productReadDto, result);
         }
+
 
         [Fact]
         public async Task DeleteProductByIdAsync_ExistingProductId_DeleteProductAndReturnDto()
@@ -119,7 +117,14 @@ namespace Tests
                 CategoryId = Guid.NewGuid()
             };
 
-            var updatedProductReadDto = _mapper.Map<ProductReadDto>(productUpdateDto);
+            var updatedProductReadDto = new ProductReadDto
+            {
+                Id = productUpdateDto.Id,
+                Name = productUpdateDto.Name,
+                Description = productUpdateDto.Description,
+                Price = productUpdateDto.Price,
+                CategoryId = productUpdateDto.CategoryId
+            };
 
             _mockProductService.Setup(s => s.UpdateProductAsync(productUpdateDto))
                                .ReturnsAsync(updatedProductReadDto);
@@ -157,7 +162,7 @@ namespace Tests
                                .ThrowsAsync(new KeyNotFoundException());
 
             var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => _mockProductService.Object.CreateProductAsync(productCreateDto));
-            
+
             Assert.IsType<KeyNotFoundException>(exception);
         }
     }

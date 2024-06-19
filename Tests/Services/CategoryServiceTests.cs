@@ -1,31 +1,21 @@
 using BusinessLogicLayer.Dtos.Categories;
 
-namespace Tests
+namespace Tests.Services
 {
     public class CategoryServiceTests
     {
         private readonly Mock<ICategoryService> _mockCategoryService;
-        private readonly IMapper _mapper;
 
         public CategoryServiceTests()
         {
             _mockCategoryService = new Mock<ICategoryService>();
-
-            var mapperConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<CategoryCreateDto, CategoryReadDto>();
-                cfg.CreateMap<CategoryUpdateDto, CategoryReadDto>();
-            });
-
-            _mapper = mapperConfig.CreateMapper();
         }
 
         [Fact]
         public async Task CreateCategoryAsync_ValidCategoryCreateDto_CreateCategoryAndReturnDto()
         {
             var categoryCreateDto = new CategoryCreateDto { Name = "TestCategory" };
-
-            var categoryReadDto = _mapper.Map<CategoryReadDto>(categoryCreateDto);
+            var categoryReadDto = new CategoryReadDto { Name = categoryCreateDto.Name };
 
             _mockCategoryService.Setup(s => s.CreateCategoryAsync(categoryCreateDto))
                                 .ReturnsAsync(categoryReadDto);
@@ -90,8 +80,7 @@ namespace Tests
         public async Task UpdateCategoryAsync_ValidCategoryUpdateDto_UpdateCategoryAndReturnDto()
         {
             var categoryUpdateDto = new CategoryUpdateDto { Id = Guid.NewGuid(), Name = "UpdatedCategory" };
-
-            var updatedCategoryReadDto = _mapper.Map<CategoryReadDto>(categoryUpdateDto);
+            var updatedCategoryReadDto = new CategoryReadDto { Id = categoryUpdateDto.Id, Name = categoryUpdateDto.Name };
 
             _mockCategoryService.Setup(s => s.UpdateCategoryAsync(categoryUpdateDto))
                                 .ReturnsAsync(updatedCategoryReadDto);
@@ -101,6 +90,7 @@ namespace Tests
             Assert.NotNull(result);
             Assert.Equal(updatedCategoryReadDto, result);
         }
+
 
         [Fact]
         public async Task CreateCategoryAsync_NullCategoryCreateDto_ThrowsArgumentNullException()
