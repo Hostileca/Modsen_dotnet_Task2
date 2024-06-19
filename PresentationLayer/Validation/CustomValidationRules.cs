@@ -1,4 +1,6 @@
-﻿using FluentValidation;
+﻿using BusinessLogicLayer.Dtos.Products;
+using FluentValidation;
+using PresentationLayer.Validation.Products;
 
 namespace PresentationLayer.Validation
 {
@@ -46,6 +48,12 @@ namespace PresentationLayer.Validation
                 .Matches("[a-z]").WithMessage("Password should contain at least one lowercase letter")
                 .Matches("[0-9]").WithMessage("Password should contain at least one digit")
                 .Matches("[^a-zA-Z0-9]").WithMessage("Password should contain at least one special character.");
+        }
+        public static IRuleBuilder<T, int> ItemAmount<T>(this IRuleBuilder<T, int> ruleBuilder)
+        {
+            return ruleBuilder
+                .NotNull().WithMessage("Amount should not be null")
+                .GreaterThan(0).WithMessage("Amount should be greater than 0");
         }
     }
 
