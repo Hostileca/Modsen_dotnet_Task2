@@ -63,17 +63,17 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<ProductReadDto>(product);
         }
 
-        public async Task<ProductReadDto> GetProductByPredicateAsync(Expression<Func<ProductReadDto, bool>> predicate)
+        public async Task<IEnumerable<ProductReadDto>> GetProductByPredicateAsync(Expression<Func<ProductReadDto, bool>> predicate)
         {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));
 
             var productPredicate = _mapper.Map<Expression<Func<Product, bool>>>(predicate);
-            var product = await _productRepository.GetByPredicateAsync(productPredicate);
-            if (product == null)
+            var products = await _productRepository.GetByPredicateAsync(productPredicate);
+            if (products == null)
                 throw new KeyNotFoundException("Product not found.");
 
-            return _mapper.Map<ProductReadDto>(product);
+            return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
 
         public async Task<ProductReadDto> UpdateProductAsync(ProductUpdateDto productUpdateDto)

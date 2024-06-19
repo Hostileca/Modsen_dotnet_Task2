@@ -7,7 +7,7 @@ namespace BusinessLogicLayer.Services.Interfaces
     {
         Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync();
         Task<OrderReadDto> GetOrderByIdAsync(Guid id);
-        Task<OrderReadDto> GetOrderByPredicateAsync(Expression<Func<OrderReadDto, bool>> predicate);
+        Task<IEnumerable<OrderReadDto>> GetOrderByPredicateAsync(Expression<Func<OrderReadDto, bool>> predicate);
         Task<OrderReadDto> CreateOrderAsync(OrderCreateDto OrderCreateDto);
         Task<OrderReadDto> DeleteOrderByIdAsync(Guid id);
     }

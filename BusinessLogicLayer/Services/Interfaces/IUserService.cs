@@ -7,7 +7,7 @@ namespace BusinessLogicLayer.Services.Interfaces
     {
         Task<IEnumerable<UserReadDto>> GetAllUsersAsync();
         Task<UserReadDto> GetUserByIdAsync(Guid id);
-        Task<UserReadDto> GetUserByPredicateAsync(Expression<Func<UserReadDto, bool>> predicate);
+        Task<IEnumerable<UserReadDto>> GetUserByPredicateAsync(Expression<Func<UserReadDto, bool>> predicate);
         Task<UserReadDto> CreateUserAsync(UserCreateDto UserCreateDto);
         Task<UserReadDto> UpdateUserAsync(UserUpdateDto UserUpdateDto);
         Task<UserReadDto> DeleteUserByIdAsync(Guid id);

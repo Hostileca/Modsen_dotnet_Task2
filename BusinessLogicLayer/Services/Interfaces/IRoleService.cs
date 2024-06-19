@@ -7,7 +7,7 @@ namespace BusinessLogicLayer.Services.Interfaces
     {
         Task<IEnumerable<RoleReadDto>> GetAllRolesAsync();
         Task<RoleReadDto> GetRoleByIdAsync(Guid id);
-        Task<RoleReadDto> GetRoleByPredicateAsync(Expression<Func<RoleReadDto, bool>> predicate);
+        Task<IEnumerable<RoleReadDto>> GetRoleByPredicateAsync(Expression<Func<RoleReadDto, bool>> predicate);
         Task<RoleReadDto> CreateRoleAsync(RoleCreateDto RoleCreateDto);
         Task<RoleReadDto> UpdateRoleAsync(RoleUpdateDto RoleUpdateDto);
         Task<RoleReadDto> DeleteRoleByIdAsync(Guid id);

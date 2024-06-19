@@ -1,8 +1,9 @@
-﻿using DataAccessLayer.Models;
+﻿using DataAccessLayer.Data.Interfaces;
+using DataAccessLayer.Models;
 
 namespace DataAccessLayer.Data.Implementations
 {
-    public class OrderRepository : BaseRepository<Order>
+    public class OrderRepository : BaseRepository<Order>, IOrderRepository
     {
         public OrderRepository(AppDbContext context) : base(context)
         {

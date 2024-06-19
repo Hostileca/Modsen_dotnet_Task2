@@ -56,17 +56,17 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<RoleReadDto>(role);
         }
 
-        public async Task<RoleReadDto> GetRoleByPredicateAsync(Expression<Func<RoleReadDto, bool>> predicate)
+        public async Task<IEnumerable<RoleReadDto>> GetRoleByPredicateAsync(Expression<Func<RoleReadDto, bool>> predicate)
         {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));
 
             var rolePredicate = _mapper.Map<Expression<Func<Role, bool>>>(predicate);
-            var role = await _roleRepository.GetByPredicateAsync(rolePredicate);
-            if (role == null)
+            var roles = await _roleRepository.GetByPredicateAsync(rolePredicate);
+            if (roles == null)
                 throw new KeyNotFoundException("Role not found.");
 
-            return _mapper.Map<RoleReadDto>(role);
+            return _mapper.Map<IEnumerable<RoleReadDto>>(roles);
         }
 
         public async Task<RoleReadDto> UpdateRoleAsync(RoleUpdateDto roleUpdateDto)

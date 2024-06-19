@@ -59,17 +59,17 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<CategoryReadDto>(category);
         }
 
-        public async Task<CategoryReadDto> GetCategoryByPredicateAsync(Expression<Func<CategoryReadDto, bool>> predicate)
+        public async Task<IEnumerable<CategoryReadDto>> GetCategoryByPredicateAsync(Expression<Func<CategoryReadDto, bool>> predicate)
         {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));
 
             var categoryPredicate = _mapper.Map<Expression<Func<Category, bool>>>(predicate);
-            var category = await _categoryRepository.GetByPredicateAsync(categoryPredicate);
-            if (category == null)
+            var categories = await _categoryRepository.GetByPredicateAsync(categoryPredicate);
+            if (categories == null)
                 throw new KeyNotFoundException("Category not found.");
 
-            return _mapper.Map<CategoryReadDto>(category);
+            return _mapper.Map< IEnumerable<CategoryReadDto>>(categories);
         }
 
         public async Task<CategoryReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto)

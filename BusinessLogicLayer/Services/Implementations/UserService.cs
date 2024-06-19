@@ -6,8 +6,6 @@ using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 using System.Linq.Expressions;
 using System.Text;
-using BusinessLogicLayer.Dtos.Products;
-using DataAccessLayer.Data.Implementations;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -64,17 +62,17 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<UserReadDto>(user);
         }
 
-        public async Task<UserReadDto> GetUserByPredicateAsync(Expression<Func<UserReadDto, bool>> predicate)
+        public async Task<IEnumerable<UserReadDto>> GetUserByPredicateAsync(Expression<Func<UserReadDto, bool>> predicate)
         {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));
 
             var userPredicate = _mapper.Map<Expression<Func<User, bool>>>(predicate);
-            var user = await _userRepository.GetByPredicateAsync(userPredicate);
-            if (user == null)
+            var users = await _userRepository.GetByPredicateAsync(userPredicate);
+            if (users == null)
                 throw new KeyNotFoundException("User not found.");
 
-            return _mapper.Map<UserReadDto>(user);
+            return _mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
         public async Task<UserReadDto> UpdateUserAsync(UserUpdateDto userUpdateDto)

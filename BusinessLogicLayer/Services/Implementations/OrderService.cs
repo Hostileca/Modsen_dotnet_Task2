@@ -58,17 +58,17 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<OrderReadDto>(order);
         }
 
-        public async Task<OrderReadDto> GetOrderByPredicateAsync(Expression<Func<OrderReadDto, bool>> predicate)
+        public async Task<IEnumerable<OrderReadDto>> GetOrderByPredicateAsync(Expression<Func<OrderReadDto, bool>> predicate)
         {
             if (predicate == null)
                 throw new ArgumentNullException(nameof(predicate));
 
             var orderPredicate = _mapper.Map<Expression<Func<Order, bool>>>(predicate);
-            var order = await _orderRepository.GetByPredicateAsync(orderPredicate);
-            if (order == null)
+            var orders = await _orderRepository.GetByPredicateAsync(orderPredicate);
+            if (orders == null)
                 throw new KeyNotFoundException("Order not found.");
 
-            return _mapper.Map<OrderReadDto>(order);
+            return _mapper.Map<IEnumerable<OrderReadDto>>(orders);
         }
     }
 }
