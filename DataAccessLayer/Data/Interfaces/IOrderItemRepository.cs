@@ -1,7 +1,8 @@
-﻿
+﻿using DataAccessLayer.Models;
+
 namespace DataAccessLayer.Data.Interfaces
 {
-    public interface IOrderItemRepository
+    public interface IOrderItemRepository : IRepository<OrderItem>
     {
     }
 }

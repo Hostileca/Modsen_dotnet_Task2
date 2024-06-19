@@ -1,7 +1,8 @@
-﻿
+﻿using DataAccessLayer.Models;
+
 namespace DataAccessLayer.Data.Interfaces
 {
-    public interface IUserRepository
+    public interface IUserRepository : IRepository<User>
     {
     }
 }

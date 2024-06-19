@@ -1,7 +1,8 @@
-﻿
+﻿using DataAccessLayer.Models;
+
 namespace DataAccessLayer.Data.Interfaces
 {
-    public interface ICategoryRepository
+    public interface ICategoryRepository : IRepository<Category>
     {
     }
 }

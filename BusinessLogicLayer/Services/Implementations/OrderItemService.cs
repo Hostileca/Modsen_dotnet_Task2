@@ -10,12 +10,13 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class OrderItemService : IOrderItemService
     {
-        private readonly IRepository<OrderItem> _orderItemRepository;
-        private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<Order> _orderRepository;
+        private readonly IOrderItemRepository _orderItemRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
 
-        public OrderItemService(IRepository<OrderItem> orderItemRepository, IRepository<Product> productRepository, IRepository<Order> orderRepository, IMapper mapper)
+        public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository, 
+            IOrderRepository orderRepository, IMapper mapper)
         {
             _orderItemRepository = orderItemRepository ?? throw new ArgumentNullException(nameof(orderItemRepository));
             _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));

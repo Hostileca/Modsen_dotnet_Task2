@@ -11,11 +11,11 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class UserService : IUserService
     {
-        private readonly IRepository<User> _userRepository;
-        private readonly IRepository<Role> _roleRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IRepository<User> userRepository, IRepository<Role> roleRepository, IMapper mapper)
+        public UserService(IUserRepository userRepository, IRoleRepository roleRepository, IMapper mapper)
         {
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
@@ -30,7 +30,7 @@ namespace BusinessLogicLayer.Services.Implementations
             var user = _mapper.Map<User>(userCreateDto);
 
             user.HashedPassword = HashPassword(userCreateDto.Password);
-            //user.Role = 
+            //user.Role = RoleConstants.User;
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();

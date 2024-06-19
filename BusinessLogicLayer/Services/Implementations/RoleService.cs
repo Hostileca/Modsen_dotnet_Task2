@@ -11,10 +11,10 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class RoleService : IRoleService
     {
-        private readonly IRepository<Role> _roleRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
 
-        public RoleService(IRepository<Role> roleRepository, IMapper mapper)
+        public RoleService(IRoleRepository roleRepository, IMapper mapper)
         {
             _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
