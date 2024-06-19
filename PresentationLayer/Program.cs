@@ -1,4 +1,5 @@
 using BusinessLogicLayer;
+using PresentationLayer.Middleware;
 
 namespace PresentationLayer
 {
@@ -9,6 +10,7 @@ namespace PresentationLayer
             var builder = WebApplication.CreateBuilder(args);
 
             ApplicationInjection.AddApplication(builder.Services, builder.Configuration);
+            builder.Services.AddScoped<ExceptionHandlingMiddleware>();
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
