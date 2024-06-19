@@ -28,12 +28,22 @@ namespace BusinessLogicLayer
         private static IServiceCollection RepositoriesConfigure(this IServiceCollection services)
         {
             services.AddScoped<IRepository<Category>, CategoryRepository>();
+            services.AddScoped<IRepository<Product>, ProductRepository>();
+            services.AddScoped<IRepository<Order>, OrderRepository>();
+            services.AddScoped<IRepository<OrderItem>, OrderItemRepository>();
+            services.AddScoped<IRepository<User>, UserRepository>();
+            services.AddScoped<IRepository<Role>, RoleRepository>();
             return services;
         }
 
         private static IServiceCollection ServicesConfigure(this IServiceCollection services)
         {
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
             return services;
         }
 
