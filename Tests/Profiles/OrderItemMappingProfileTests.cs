@@ -11,6 +11,7 @@ namespace Tests.Profiles
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new OrderItemMappingProfile());
+                cfg.AddProfile(new ProductMappingProfile());
             });
 
             _mapper = configuration.CreateMapper();

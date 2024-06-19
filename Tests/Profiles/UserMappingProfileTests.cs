@@ -11,6 +11,7 @@ namespace Tests.Profiles
             var configuration = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new UserMappingProfile());
+                cfg.AddProfile(new RoleMappingProfile());
             });
 
             _mapper = configuration.CreateMapper();
