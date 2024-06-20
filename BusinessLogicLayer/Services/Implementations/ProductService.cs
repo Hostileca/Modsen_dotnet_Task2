@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Products;
+using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
+using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -19,7 +21,7 @@ namespace BusinessLogicLayer.Services.Implementations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<ProductReadDto> CreateProductAsync(ProductCreateDto productCreateDto)
+        public async Task<ProductDetailedReadDto> CreateProductAsync(ProductCreateDto productCreateDto)
         {
             if (productCreateDto == null)
                 throw new ArgumentNullException(nameof(productCreateDto));
@@ -34,10 +36,10 @@ namespace BusinessLogicLayer.Services.Implementations
 
             await _productRepository.AddAsync(product);
             await _productRepository.SaveChangesAsync();
-            return _mapper.Map<ProductReadDto>(product);
+            return _mapper.Map<ProductDetailedReadDto>(product);
         }
 
-        public async Task<ProductReadDto> DeleteProductByIdAsync(Guid id)
+        public async Task<ProductDetailedReadDto> DeleteProductByIdAsync(Guid id)
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
@@ -45,7 +47,7 @@ namespace BusinessLogicLayer.Services.Implementations
 
             _productRepository.Delete(product);
             await _productRepository.SaveChangesAsync();
-            return _mapper.Map<ProductReadDto>(product);
+            return _mapper.Map<ProductDetailedReadDto>(product);
         }
 
         public async Task<IEnumerable<ProductReadDto>> GetAllProductsAsync()
@@ -54,15 +56,15 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
 
-        public async Task<ProductReadDto> GetProductByIdAsync(Guid id)
+        public async Task<ProductDetailedReadDto> GetProductByIdAsync(Guid id)
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
                 throw new KeyNotFoundException($"Product not found with id: {id}");
-            return _mapper.Map<ProductReadDto>(product);
+            return _mapper.Map<ProductDetailedReadDto>(product);
         }
 
-        public async Task<ProductReadDto> UpdateProductAsync(ProductUpdateDto productUpdateDto)
+        public async Task<ProductDetailedReadDto> UpdateProductAsync(ProductUpdateDto productUpdateDto)
         {
             if (productUpdateDto == null)
                 throw new ArgumentNullException(nameof(productUpdateDto));
@@ -79,14 +81,40 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var newProduct = _mapper.Map(productUpdateDto, existingProduct);
             await _productRepository.SaveChangesAsync();
-            return _mapper.Map<ProductReadDto>(newProduct);
+            return _mapper.Map<ProductDetailedReadDto>(newProduct);
         }
 
         public async Task<IEnumerable<ProductReadDto>> GetProductsByFilter(ProductQuery productQuery)
         {
-            var products = await _productRepository.GetByPredicateAsync(product => product.Name.Contains(productQuery.Name) &&
-            product.Description.Contains(productQuery.Description) &&
-            product.Price < productQuery.MaxPrice && product.Price > productQuery.MinPrice && product.CategoryId == productQuery.CategoryId);
+            Expression<Func<Product, bool>> predicate = product => true;
+
+            if (!string.IsNullOrEmpty(productQuery.Name))
+            {
+                predicate = predicate.And(product => product.Name.Contains(productQuery.Name));
+            }
+
+            if (!string.IsNullOrEmpty(productQuery.Description))
+            {
+                predicate = predicate.And(product => product.Description.Contains(productQuery.Description));
+            }
+
+            if (productQuery.MaxPrice > 0)
+            {
+                predicate = predicate.And(product => product.Price < productQuery.MaxPrice);
+            }
+
+            if (productQuery.MinPrice < 0)
+            {
+                predicate = predicate.And(product => product.Price > productQuery.MinPrice);
+            }
+
+            if (productQuery.CategoryId != Guid.Empty)
+            {
+                predicate = predicate.And(product => product.CategoryId == productQuery.CategoryId);
+            }
+
+            var products = await _productRepository.GetByPredicateAsync(predicate);
+
             return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
     }
