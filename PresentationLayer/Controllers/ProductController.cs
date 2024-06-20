@@ -29,12 +29,12 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
 
-        //[HttpGet("search/{name}")]
-        //public async Task<IActionResult> GetProductsByName(string name)
-        //{
-        //    var products = await _productService.GetProductByPredicateAsync(product => product.Name == name);
-        //    return Ok(products);
-        //}
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetProductsByName([FromQuery]ProductQuery filter)
+        {
+            var products = await _productService.GetProductsByFilter(filter);
+            return Ok(products);
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(ProductCreateDto productCreateDto)
@@ -43,9 +43,10 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
 
-        [HttpPut("{productUpdateDto.Id}")]
-        public async Task<IActionResult> UpdateProduct(ProductUpdateDto productUpdateDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(Guid id, ProductUpdateDto productUpdateDto)
         {
+            productUpdateDto.Id = id;
             var product = await _productService.UpdateProductAsync(productUpdateDto);
             return Ok(product);
         }
