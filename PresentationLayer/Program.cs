@@ -18,7 +18,8 @@ namespace PresentationLayer
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            ApplicationInjection.StartApplication(app.Services);
+
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

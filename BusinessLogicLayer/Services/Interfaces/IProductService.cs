@@ -1,5 +1,4 @@
 ﻿using BusinessLogicLayer.Dtos.Products;
-using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Interfaces
 {
@@ -7,7 +6,7 @@ namespace BusinessLogicLayer.Services.Interfaces
     {
         Task<IEnumerable<ProductReadDto>> GetAllProductsAsync();
         Task<ProductReadDto> GetProductByIdAsync(Guid id);
-        Task<IEnumerable<ProductReadDto>> GetProductByPredicateAsync(Expression<Func<ProductReadDto, bool>> predicate);
+        public Task<IEnumerable<ProductReadDto>> GetProductsByFilter(ProductQuery productQuery);
         Task<ProductReadDto> CreateProductAsync(ProductCreateDto productCreateDto);
         Task<ProductReadDto> UpdateProductAsync(ProductUpdateDto productUpdateDto);
         Task<ProductReadDto> DeleteProductByIdAsync(Guid id);

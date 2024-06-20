@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using BusinessLogicLayer.Dtos.Categories;
 using BusinessLogicLayer.Dtos.OrderItems;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
-using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -15,7 +13,7 @@ namespace BusinessLogicLayer.Services.Implementations
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
 
-        public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository, 
+        public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository,
             IOrderRepository orderRepository, IMapper mapper)
         {
             _orderItemRepository = orderItemRepository ?? throw new ArgumentNullException(nameof(orderItemRepository));
@@ -28,7 +26,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             if (orderItemCreateDto == null)
                 throw new ArgumentNullException(nameof(orderItemCreateDto));
-            
+
             var orderItem = _mapper.Map<OrderItem>(orderItemCreateDto);
 
             var existingProduct = await _productRepository.GetByIdAsync(orderItemCreateDto.ProductId);
@@ -73,19 +71,6 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new KeyNotFoundException($"Order item not found with id: {id}");
 
             return _mapper.Map<OrderItemReadDto>(orderItem);
-        }
-
-        public async Task<IEnumerable<OrderItemReadDto>> GetOrderItemByPredicateAsync(Expression<Func<OrderItemReadDto, bool>> predicate)
-        {
-            if (predicate == null)
-                throw new ArgumentNullException(nameof(predicate));
-
-            var orderItemPredicate = _mapper.Map<Expression<Func<OrderItem, bool>>>(predicate);
-            var orderItems = await _orderItemRepository.GetByPredicateAsync(orderItemPredicate);
-            if (orderItems == null)
-                throw new KeyNotFoundException("Order item not found.");
-
-            return _mapper.Map<IEnumerable<OrderItemReadDto>>(orderItems);
         }
 
         public async Task<OrderItemReadDto> UpdateOrderItemAsync(OrderItemUpdateDto orderItemUpdateDto)

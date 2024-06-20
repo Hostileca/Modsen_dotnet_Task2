@@ -3,7 +3,6 @@ using BusinessLogicLayer.Dtos.Orders;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
-using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -56,19 +55,6 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new KeyNotFoundException($"Order not found with id: {id}");
 
             return _mapper.Map<OrderReadDto>(order);
-        }
-
-        public async Task<IEnumerable<OrderReadDto>> GetOrderByPredicateAsync(Expression<Func<OrderReadDto, bool>> predicate)
-        {
-            if (predicate == null)
-                throw new ArgumentNullException(nameof(predicate));
-
-            var orderPredicate = _mapper.Map<Expression<Func<Order, bool>>>(predicate);
-            var orders = await _orderRepository.GetByPredicateAsync(orderPredicate);
-            if (orders == null)
-                throw new KeyNotFoundException("Order not found.");
-
-            return _mapper.Map<IEnumerable<OrderReadDto>>(orders);
         }
     }
 }

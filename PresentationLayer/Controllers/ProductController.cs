@@ -1,9 +1,6 @@
 ﻿using BusinessLogicLayer.Dtos.Products;
 using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
-using System;
-using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace PresentationLayer.Controllers
 {
@@ -32,12 +29,12 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
 
-        [HttpGet("search/{name}")]
-        public async Task<IActionResult> GetProductsByName(string name)
-        {
-            var products = await _productService.GetProductByPredicateAsync(product => product.Name == name);
-            return Ok(products);
-        }
+        //[HttpGet("search/{name}")]
+        //public async Task<IActionResult> GetProductsByName(string name)
+        //{
+        //    var products = await _productService.GetProductByPredicateAsync(product => product.Name == name);
+        //    return Ok(products);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(ProductCreateDto productCreateDto)
@@ -46,12 +43,12 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
 
-        //[HttpPut("{productUpdateDto.Id}")]
-        //public async Task<IActionResult> UpdateProduct(ProductUpdateDto productUpdateDto)
-        //{
-        //    var product = await _productService.UpdateProductAsync(productUpdateDto);
-        //    return Ok(product);
-        //}
+        [HttpPut("{productUpdateDto.Id}")]
+        public async Task<IActionResult> UpdateProduct(ProductUpdateDto productUpdateDto)
+        {
+            var product = await _productService.UpdateProductAsync(productUpdateDto);
+            return Ok(product);
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)

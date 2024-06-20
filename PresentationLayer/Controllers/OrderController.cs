@@ -1,7 +1,5 @@
 ﻿using BusinessLogicLayer.Dtos.Orders;
-using BusinessLogicLayer.Dtos.Products;
 using BusinessLogicLayer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers

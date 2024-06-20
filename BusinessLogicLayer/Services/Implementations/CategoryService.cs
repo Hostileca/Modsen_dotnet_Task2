@@ -3,7 +3,6 @@ using BusinessLogicLayer.Dtos.Categories;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
-using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -55,19 +54,6 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new KeyNotFoundException($"Category not found with id: {id}");
 
             return _mapper.Map<CategoryReadDto>(category);
-        }
-
-        public async Task<IEnumerable<CategoryReadDto>> GetCategoryByPredicateAsync(Expression<Func<CategoryReadDto, bool>> predicate)
-        {
-            if (predicate == null)
-                throw new ArgumentNullException(nameof(predicate));
-
-            var categoryPredicate = _mapper.Map<Expression<Func<Category, bool>>>(predicate);
-            var categories = await _categoryRepository.GetByPredicateAsync(categoryPredicate);
-            if (categories == null)
-                throw new KeyNotFoundException("Category not found.");
-
-            return _mapper.Map< IEnumerable<CategoryReadDto>>(categories);
         }
 
         public async Task<CategoryReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto)

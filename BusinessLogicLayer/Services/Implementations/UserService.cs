@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
-using System.Security.Cryptography;
 using BusinessLogicLayer.Dtos.Users;
+using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
-using System.Linq.Expressions;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace BusinessLogicLayer.Services.Implementations
@@ -29,8 +29,8 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var user = _mapper.Map<User>(userCreateDto);
 
-            user.HashedPassword = HashPassword(userCreateDto.Password);
-            //user.Role = RoleConstants.User;
+            user.HashedPassword = PasswordHasher.HashPassword(userCreateDto.Password);
+            user.Role = (await _roleRepository.GetByPredicateAsync(r => r.Name == RoleConstants.User)).First();
 
             await _userRepository.AddAsync(user);
             await _userRepository.SaveChangesAsync();
@@ -60,19 +60,6 @@ namespace BusinessLogicLayer.Services.Implementations
             if (user == null)
                 throw new KeyNotFoundException($"User not found with id: {id}");
             return _mapper.Map<UserReadDto>(user);
-        }
-
-        public async Task<IEnumerable<UserReadDto>> GetUserByPredicateAsync(Expression<Func<UserReadDto, bool>> predicate)
-        {
-            if (predicate == null)
-                throw new ArgumentNullException(nameof(predicate));
-
-            var userPredicate = _mapper.Map<Expression<Func<User, bool>>>(predicate);
-            var users = await _userRepository.GetByPredicateAsync(userPredicate);
-            if (users == null)
-                throw new KeyNotFoundException("User not found.");
-
-            return _mapper.Map<IEnumerable<UserReadDto>>(users);
         }
 
         public async Task<UserReadDto> UpdateUserAsync(UserUpdateDto userUpdateDto)

@@ -1,7 +1,5 @@
-﻿using BusinessLogicLayer.Dtos.Products;
-using BusinessLogicLayer.Dtos.Users;
+﻿using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -31,12 +29,12 @@ namespace PresentationLayer.Controllers
             return Ok(user);
         }
 
-        [HttpGet("search/{userName}")]
-        public async Task<IActionResult> GetUsersByUserName(string userName)
-        {
-            var users = await _userService.GetUserByPredicateAsync(user => user.UserName == userName);
-            return Ok(users);
-        }
+        //[HttpGet("search/{userName}")]
+        //public async Task<IActionResult> GetUsersByUserName(string userName)
+        //{
+        //    var users = await _userService.GetUserByPredicateAsync(user => user.UserName == userName);
+        //    return Ok(users);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserCreateDto userCreateDto)

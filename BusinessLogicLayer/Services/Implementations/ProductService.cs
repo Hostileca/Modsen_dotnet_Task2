@@ -3,7 +3,6 @@ using BusinessLogicLayer.Dtos.Products;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
-using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -26,11 +25,11 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new ArgumentNullException(nameof(productCreateDto));
 
             var product = _mapper.Map<Product>(productCreateDto);
-            
+
             var existingCategory = await _categoryRepository.GetByIdAsync(productCreateDto.CategoryId);
             if (existingCategory == null)
                 throw new KeyNotFoundException($"Category not found with id: {productCreateDto.CategoryId}");
-            
+
             product.Category = existingCategory;
 
             await _productRepository.AddAsync(product);
@@ -43,7 +42,7 @@ namespace BusinessLogicLayer.Services.Implementations
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
                 throw new KeyNotFoundException($"Product not found with id: {id}");
-            
+
             _productRepository.Delete(product);
             await _productRepository.SaveChangesAsync();
             return _mapper.Map<ProductReadDto>(product);
@@ -61,19 +60,6 @@ namespace BusinessLogicLayer.Services.Implementations
             if (product == null)
                 throw new KeyNotFoundException($"Product not found with id: {id}");
             return _mapper.Map<ProductReadDto>(product);
-        }
-
-        public async Task<IEnumerable<ProductReadDto>> GetProductByPredicateAsync(Expression<Func<ProductReadDto, bool>> predicate)
-        {
-            if (predicate == null)
-                throw new ArgumentNullException(nameof(predicate));
-
-            var productPredicate = _mapper.Map<Expression<Func<Product, bool>>>(predicate);
-            var products = await _productRepository.GetByPredicateAsync(productPredicate);
-            if (products == null)
-                throw new KeyNotFoundException("Product not found.");
-
-            return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
 
         public async Task<ProductReadDto> UpdateProductAsync(ProductUpdateDto productUpdateDto)
@@ -94,6 +80,14 @@ namespace BusinessLogicLayer.Services.Implementations
             var newProduct = _mapper.Map(productUpdateDto, existingProduct);
             await _productRepository.SaveChangesAsync();
             return _mapper.Map<ProductReadDto>(newProduct);
+        }
+
+        public async Task<IEnumerable<ProductReadDto>> GetProductsByFilter(ProductQuery productQuery)
+        {
+            var products = await _productRepository.GetByPredicateAsync(product => product.Name.Contains(productQuery.Name) &&
+            product.Description.Contains(productQuery.Description) &&
+            product.Price < productQuery.MaxPrice && product.Price > productQuery.MinPrice && product.CategoryId == productQuery.CategoryId);
+            return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
     }
 }

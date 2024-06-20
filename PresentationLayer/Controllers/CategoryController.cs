@@ -1,5 +1,4 @@
 ﻿using BusinessLogicLayer.Dtos.Categories;
-using BusinessLogicLayer.Services.Implementations;
 using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,12 +29,12 @@ namespace PresentationLayer.Controllers
             return Ok(category);
         }
 
-        [HttpGet("search/{name}")]
-        public async Task<IActionResult> GetCategoriesByName(string name)
-        {
-            var categories = await _categoryService.GetCategoryByPredicateAsync(category => category.Name == name);
-            return Ok(categories);
-        }
+        //[HttpGet("search/{name}")]
+        //public async Task<IActionResult> GetCategoriesByName(string name)
+        //{
+        //    var categories = await _categoryService.GetCategoryByPredicateAsync(category => category.Name == name);
+        //    return Ok(categories);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CategoryCreateDto categoryCreateDto)

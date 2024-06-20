@@ -1,7 +1,5 @@
 ﻿using BusinessLogicLayer.Dtos.OrderItems;
-using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -31,12 +29,12 @@ namespace PresentationLayer.Controllers
             return Ok(orderItem);
         }
 
-        [HttpGet("search/{amount}")]
-        public async Task<IActionResult> GetUsersByAmount(int amount)
-        {
-            var orderItems = await _orderItemService.GetOrderItemByPredicateAsync(orderItem => orderItem.Amount == amount);
-            return Ok(orderItems);
-        }
+        //[HttpGet("search/{amount}")]
+        //public async Task<IActionResult> GetUsersByAmount(int amount)
+        //{
+        //    var orderItems = await _orderItemService.GetOrderItemByPredicateAsync(orderItem => orderItem.Amount == amount);
+        //    return Ok(orderItems);
+        //}
 
         [HttpPost]
         public async Task<IActionResult> CreateOrderItem(OrderItemCreateDto orderItemCreateDto)
