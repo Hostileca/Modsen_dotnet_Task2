@@ -36,13 +36,6 @@ namespace PresentationLayer.Controllers
             return Ok(order);
         }
 
-        //[HttpPut("{orderUpdateDto.Id}")]
-        //public async Task<IActionResult> UpdateOrder(OrderUpdateDto orderUpdateDto)
-        //{
-        //    var order = await _orderService.UpdateOrderAsync(orderUpdateDto);
-        //    return Ok(order);
-        //}
-
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(Guid id)
         {
