@@ -15,8 +15,5 @@ public class ProductCreateValidator : AbstractValidator<ProductCreateDto>
 
         RuleFor(product => product.Price)
             .Price();
-
-        RuleFor(product => product.CategoryId)
-            .IsGuid();
     }
 }

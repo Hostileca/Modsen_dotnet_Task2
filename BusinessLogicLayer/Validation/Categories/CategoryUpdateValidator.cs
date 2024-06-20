@@ -9,8 +9,5 @@ public class CategoryUpdateValidator : AbstractValidator<CategoryUpdateDto>
     {
         RuleFor(category => category.Name)
             .CategoryOrProductName();
-
-        RuleFor(category => category.Id)
-            .IsGuid();
     }
 }

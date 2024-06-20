@@ -9,11 +9,5 @@ public class OrderItemCreateValidator : AbstractValidator<OrderItemCreateDto>
     {
         RuleFor(orderItem => orderItem.Amount)
             .ItemAmount();
-
-        RuleFor(orderItem => orderItem.OrderId)
-            .IsGuid();
-
-        RuleFor(orderItem => orderItem.ProductId)
-            .IsGuid();
     }
 }

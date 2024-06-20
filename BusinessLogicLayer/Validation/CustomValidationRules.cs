@@ -21,7 +21,6 @@ public static class CustomValidationRules
     public static IRuleBuilder<T, float> Price<T>(this IRuleBuilder<T, float> ruleBuilder)
     {
         return ruleBuilder
-            .NotNull().WithMessage("Price should not be null")
             .GreaterThan(0).WithMessage("Price should be greater than 0");
     }
     public static IRuleBuilder<T, Guid> IsGuid<T>(this IRuleBuilder<T, Guid> ruleBuilder)
@@ -50,7 +49,6 @@ public static class CustomValidationRules
     public static IRuleBuilder<T, int> ItemAmount<T>(this IRuleBuilder<T, int> ruleBuilder)
     {
         return ruleBuilder
-            .NotNull().WithMessage("Amount should not be null")
             .GreaterThan(0).WithMessage("Amount should be greater than 0");
     }
 }
