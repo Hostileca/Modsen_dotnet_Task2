@@ -1,4 +1,6 @@
-﻿using BusinessLogicLayer.Dtos.Product;
+﻿using AutoMapper;
+using BusinessLogicLayer.Dtos.Products;
+using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
@@ -6,43 +8,114 @@ using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
-    public class ProductService : IService<Product, ProductReadDto, ProductCreateDto, ProductUpdateDto>
+    public class ProductService : IProductService
     {
-        private readonly IRepository<Product> _productRepo;
-        private readonly IRepository<Category> _categoriesRepo;
-        //private readonly IMapper _mapper;
+        private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-
-        public ProductService(IRepository<Product> productRepo, IRepository<Category> categoriesRepo/*, IMapper mapper*/)
+        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper)
         {
-            _productRepo = productRepo;
-            _categoriesRepo = categoriesRepo;
-            //_mapper = mapper;
+            _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
+            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<ProductReadDto>> GetAllAsync()
+        public async Task<ProductDetailedReadDto> CreateProductAsync(ProductCreateDto productCreateDto)
         {
-            return null;
-        }
-        public async Task<ProductReadDto> GetByPredicateAsync(Expression<Func<ProductReadDto, bool>> predicate)
-        {
-            return null;
-        }
-        public async Task CreateItemAsync(ProductCreateDto itemCreateDto)
-        {
+            if (productCreateDto == null)
+                throw new ArgumentNullException(nameof(productCreateDto));
 
-        }
-        public async Task UpdateItemAsync(ProductUpdateDto itemUpdateDto)
-        {
+            var product = _mapper.Map<Product>(productCreateDto);
 
-        }
-        public async Task DeleteItemAsync(Product item)
-        {
+            var existingCategory = await _categoryRepository.GetByIdAsync(productCreateDto.CategoryId);
+            if (existingCategory == null)
+                throw new KeyNotFoundException($"Category not found with id: {productCreateDto.CategoryId}");
 
-        }
-        public async Task SaveChangesAsync()
-        {
+            product.Category = existingCategory;
 
+            await _productRepository.AddAsync(product);
+            await _productRepository.SaveChangesAsync();
+            return _mapper.Map<ProductDetailedReadDto>(product);
+        }
+
+        public async Task<ProductDetailedReadDto> DeleteProductByIdAsync(Guid id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+                throw new KeyNotFoundException($"Product not found with id: {id}");
+
+            _productRepository.Delete(product);
+            await _productRepository.SaveChangesAsync();
+            return _mapper.Map<ProductDetailedReadDto>(product);
+        }
+
+        public async Task<IEnumerable<ProductReadDto>> GetAllProductsAsync()
+        {
+            var products = await _productRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ProductReadDto>>(products);
+        }
+
+        public async Task<ProductDetailedReadDto> GetProductByIdAsync(Guid id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+                throw new KeyNotFoundException($"Product not found with id: {id}");
+            return _mapper.Map<ProductDetailedReadDto>(product);
+        }
+
+        public async Task<ProductDetailedReadDto> UpdateProductAsync(ProductUpdateDto productUpdateDto)
+        {
+            if (productUpdateDto == null)
+                throw new ArgumentNullException(nameof(productUpdateDto));
+
+            var existingProduct = await _productRepository.GetByIdAsync(productUpdateDto.Id);
+            if (existingProduct == null)
+                throw new KeyNotFoundException($"Product not found with id: {productUpdateDto.Id}");
+
+            var existingCategory = await _categoryRepository.GetByIdAsync(productUpdateDto.CategoryId);
+            if (existingCategory == null)
+                throw new KeyNotFoundException($"Category not found with id: {productUpdateDto.CategoryId}");
+
+            existingProduct.Category = existingCategory;
+
+            var newProduct = _mapper.Map(productUpdateDto, existingProduct);
+            await _productRepository.SaveChangesAsync();
+            return _mapper.Map<ProductDetailedReadDto>(newProduct);
+        }
+
+        public async Task<IEnumerable<ProductReadDto>> GetProductsByFilter(ProductQuery productQuery)
+        {
+            Expression<Func<Product, bool>> predicate = product => true;
+
+            if (!string.IsNullOrEmpty(productQuery.Name))
+            {
+                predicate = predicate.And(product => product.Name.Contains(productQuery.Name));
+            }
+
+            if (!string.IsNullOrEmpty(productQuery.Description))
+            {
+                predicate = predicate.And(product => product.Description.Contains(productQuery.Description));
+            }
+
+            if (productQuery.MaxPrice > 0)
+            {
+                predicate = predicate.And(product => product.Price < productQuery.MaxPrice);
+            }
+
+            if (productQuery.MinPrice < 0)
+            {
+                predicate = predicate.And(product => product.Price > productQuery.MinPrice);
+            }
+
+            if (productQuery.CategoryId != Guid.Empty)
+            {
+                predicate = predicate.And(product => product.CategoryId == productQuery.CategoryId);
+            }
+
+            var products = await _productRepository.GetByPredicateAsync(predicate);
+
+            return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
     }
 }
