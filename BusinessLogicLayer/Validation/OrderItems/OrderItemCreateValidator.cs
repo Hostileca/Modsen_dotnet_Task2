@@ -1,7 +1,7 @@
 ﻿using BusinessLogicLayer.Dtos.OrderItems;
 using FluentValidation;
 
-namespace PresentationLayer.Validation.OrderItems;
+namespace BusinessLogicLayer.Validation.OrderItems;
 
 public class OrderItemCreateValidator : AbstractValidator<OrderItemCreateDto>
 {
@@ -9,6 +9,9 @@ public class OrderItemCreateValidator : AbstractValidator<OrderItemCreateDto>
     {
         RuleFor(orderItem => orderItem.Amount)
             .ItemAmount();
+
+        RuleFor(orderItem => orderItem.OrderId)
+            .IsGuid();
 
         RuleFor(orderItem => orderItem.ProductId)
             .IsGuid();

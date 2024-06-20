@@ -1,11 +1,11 @@
 ﻿using BusinessLogicLayer.Dtos.Products;
 using FluentValidation;
 
-namespace PresentationLayer.Validation.Products;
+namespace BusinessLogicLayer.Validation.Products;
 
-public class ProductUpdateValidator : AbstractValidator<ProductUpdateDto>
+public class ProductCreateValidator : AbstractValidator<ProductCreateDto>
 {
-    public ProductUpdateValidator()
+    public ProductCreateValidator()
     {
         RuleFor(product => product.Name)
             .CategoryOrProductName();

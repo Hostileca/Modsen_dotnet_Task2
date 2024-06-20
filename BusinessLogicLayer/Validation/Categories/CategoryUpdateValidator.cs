@@ -1,7 +1,7 @@
 ﻿using BusinessLogicLayer.Dtos.Categories;
 using FluentValidation;
 
-namespace PresentationLayer.Validation.Categories;
+namespace BusinessLogicLayer.Validation.Categories;
 
 public class CategoryUpdateValidator : AbstractValidator<CategoryUpdateDto>
 {
@@ -9,5 +9,8 @@ public class CategoryUpdateValidator : AbstractValidator<CategoryUpdateDto>
     {
         RuleFor(category => category.Name)
             .CategoryOrProductName();
+
+        RuleFor(category => category.Id)
+            .IsGuid();
     }
 }

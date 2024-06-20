@@ -1,7 +1,7 @@
 ﻿using BusinessLogicLayer.Dtos.Users;
 using FluentValidation;
 
-namespace PresentationLayer.Validation.Users;
+namespace BusinessLogicLayer.Validation.Users;
 
 public class UserCreateValidator : AbstractValidator<UserCreateDto>
 {

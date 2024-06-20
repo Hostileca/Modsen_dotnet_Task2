@@ -1,8 +1,8 @@
 ﻿using BusinessLogicLayer.Dtos.Orders;
+using BusinessLogicLayer.Validation.OrderItems;
 using FluentValidation;
-using PresentationLayer.Validation.OrderItems;
 
-namespace PresentationLayer.Validation.Orders;
+namespace BusinessLogicLayer.Validation.Orders;
 
 public class OrderCreateValidator : AbstractValidator<OrderCreateDto>
 {
