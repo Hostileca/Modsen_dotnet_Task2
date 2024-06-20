@@ -1,5 +1,4 @@
 ﻿using BusinessLogicLayer.Dtos.OrderItems;
-using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Dtos.Orders
 {

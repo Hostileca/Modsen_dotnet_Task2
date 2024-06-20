@@ -1,5 +1,4 @@
 ﻿using BusinessLogicLayer.Dtos.Roles;
-using DataAccessLayer.Models;
 
 namespace BusinessLogicLayer.Dtos.Users
 {

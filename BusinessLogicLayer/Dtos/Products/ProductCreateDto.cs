@@ -1,6 +1,4 @@
-﻿using DataAccessLayer.Models;
-
-namespace BusinessLogicLayer.Dtos.Products
+﻿namespace BusinessLogicLayer.Dtos.Products
 {
     public class ProductCreateDto
     {

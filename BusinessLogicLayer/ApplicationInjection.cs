@@ -1,8 +1,13 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using BusinessLogicLayer.Services.Implementations;
+using BusinessLogicLayer.Services.Interfaces;
+using DataAccessLayer.Data;
+using DataAccessLayer.Data.Implementations;
+using DataAccessLayer.Data.Interfaces;
+using DataAccessLayer.Models;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using DataAccessLayer.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace BusinessLogicLayer
 {
@@ -12,15 +17,23 @@ namespace BusinessLogicLayer
             (this IServiceCollection services, IConfiguration configuration)
         {
             services
-                .ServicesConfigure()
-                .DbConfigure(configuration);
+                .DbConfigure(configuration)
+                .AutoMapperConfigure()
+                .RepositoriesConfigure()
+                .ServicesConfigure();
 
+            return services;
+        }
+
+        private static IServiceCollection RepositoriesConfigure(this IServiceCollection services)
+        {
+            services.AddScoped<IRepository<Category>, CategoryRepository>();
             return services;
         }
 
         private static IServiceCollection ServicesConfigure(this IServiceCollection services)
         {
-
+            services.AddScoped<ICategoryService, CategoryService>();
             return services;
         }
 
@@ -29,6 +42,12 @@ namespace BusinessLogicLayer
             var sqlConnectionBuilder = new SqlConnectionStringBuilder();
             sqlConnectionBuilder.ConnectionString = configuration.GetConnectionString("SQLDbConnection");
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(sqlConnectionBuilder.ConnectionString));
+            return services;
+        }
+
+        private static IServiceCollection AutoMapperConfigure(this IServiceCollection services)
+        {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             return services;
         }
     }
