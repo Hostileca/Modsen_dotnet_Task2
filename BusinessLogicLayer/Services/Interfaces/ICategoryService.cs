@@ -5,9 +5,9 @@ namespace BusinessLogicLayer.Services.Interfaces
     public interface ICategoryService
     {
         Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync();
-        Task<CategoryReadDto> GetCategoryByIdAsync(Guid id);
-        Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto);
-        Task<CategoryReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto);
-        Task<CategoryReadDto> DeleteCategoryByIdAsync(Guid id);
+        Task<CategoryDetailedReadDto> GetCategoryByIdAsync(Guid id);
+        Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto);
+        Task<CategoryDetailedReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto);
+        Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id);
     }
 }

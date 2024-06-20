@@ -17,7 +17,7 @@ namespace BusinessLogicLayer.Services.Implementations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto)
+        public async Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto)
         {
             if (categoryCreateDto == null)
                 throw new ArgumentNullException(nameof(categoryCreateDto));
@@ -26,10 +26,10 @@ namespace BusinessLogicLayer.Services.Implementations
             await _categoryRepository.AddAsync(category);
             await _categoryRepository.SaveChangesAsync();
 
-            return _mapper.Map<CategoryReadDto>(category);
+            return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
-        public async Task<CategoryReadDto> DeleteCategoryByIdAsync(Guid id)
+        public async Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
@@ -38,7 +38,7 @@ namespace BusinessLogicLayer.Services.Implementations
             _categoryRepository.Delete(category);
             await _categoryRepository.SaveChangesAsync();
 
-            return _mapper.Map<CategoryReadDto>(category);
+            return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
         public async Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync()
@@ -47,16 +47,16 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<IEnumerable<CategoryReadDto>>(categories);
         }
 
-        public async Task<CategoryReadDto> GetCategoryByIdAsync(Guid id)
+        public async Task<CategoryDetailedReadDto> GetCategoryByIdAsync(Guid id)
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
                 throw new KeyNotFoundException($"Category not found with id: {id}");
 
-            return _mapper.Map<CategoryReadDto>(category);
+            return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
-        public async Task<CategoryReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto)
+        public async Task<CategoryDetailedReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto)
         {
             if (categoryUpdateDto == null)
                 throw new ArgumentNullException(nameof(categoryUpdateDto));
@@ -67,7 +67,7 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var newCategory = _mapper.Map(categoryUpdateDto, existingCategory);
             await _categoryRepository.SaveChangesAsync();
-            return _mapper.Map<CategoryReadDto>(newCategory);
+            return _mapper.Map<CategoryDetailedReadDto>(newCategory);
         }
     }
 }
