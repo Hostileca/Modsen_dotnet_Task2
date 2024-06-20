@@ -29,13 +29,6 @@ namespace PresentationLayer.Controllers
             return Ok(category);
         }
 
-        //[HttpGet("search/{name}")]
-        //public async Task<IActionResult> GetCategoriesByName(string name)
-        //{
-        //    var categories = await _categoryService.GetCategoryByPredicateAsync(category => category.Name == name);
-        //    return Ok(categories);
-        //}
-
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CategoryCreateDto categoryCreateDto)
         {
@@ -43,12 +36,13 @@ namespace PresentationLayer.Controllers
             return Ok(category);
         }
 
-        //[HttpPut("{categoryUpdateDto.Id}")]
-        //public async Task<IActionResult> UpdateCategory(CategoryUpdateDto categoryUpdateDto)
-        //{
-        //    var category = await _categoryService.UpdateCategoryAsync(categoryUpdateDto);
-        //    return Ok(category);
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(Guid id, CategoryUpdateDto categoryUpdateDto)
+        {
+            categoryUpdateDto.Id = id;
+            var category = await _categoryService.UpdateCategoryAsync(categoryUpdateDto);
+            return Ok(category);
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(Guid id)
