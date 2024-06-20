@@ -17,23 +17,33 @@ namespace BusinessLogicLayer
             (this IServiceCollection services, IConfiguration configuration)
         {
             services
-                .DbConfigure(configuration)
                 .AutoMapperConfigure()
                 .RepositoriesConfigure()
-                .ServicesConfigure();
+                .ServicesConfigure()
+                .DbConfigure(configuration);
 
             return services;
         }
 
         private static IServiceCollection RepositoriesConfigure(this IServiceCollection services)
         {
-            services.AddScoped<IRepository<Category>, CategoryRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
             return services;
         }
 
         private static IServiceCollection ServicesConfigure(this IServiceCollection services)
         {
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IOrderItemService, OrderItemService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IRoleService, RoleService>();
             return services;
         }
 
@@ -48,6 +58,33 @@ namespace BusinessLogicLayer
         private static IServiceCollection AutoMapperConfigure(this IServiceCollection services)
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            return services;
+        }
+
+        public static IServiceProvider StartApplication(this IServiceProvider services)
+        {
+            services
+                .AddRoles();
+            return services;
+        }
+
+        private static IServiceProvider AddRoles(this IServiceProvider services)
+        {
+            using (var scope = services.CreateScope())
+            {
+                using (var context = scope.ServiceProvider.GetRequiredService<AppDbContext>())
+                {
+                    if (!context.Roles.Any())
+                    {
+                        context.Roles.AddRange(
+                            new Role { Id = Guid.NewGuid(), Name = RoleConstants.Admin },
+                            new Role { Id = Guid.NewGuid(), Name = RoleConstants.User }
+                        );
+
+                        context.SaveChanges();
+                    }
+                }
+            }
             return services;
         }
     }

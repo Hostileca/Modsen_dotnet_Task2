@@ -9,23 +9,46 @@ namespace PresentationLayer.Controllers
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
+
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllCategories()
         {
-            var products = await _categoryService.GetAllCategoriesAsync();
-            return Ok(products);
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            return Ok(categories);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCategoryById(Guid id)
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+            return Ok(category);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct(CategoryCreateDto categoryCreateDto)
+        public async Task<IActionResult> CreateCategory(CategoryCreateDto categoryCreateDto)
         {
-            var product = await _categoryService.CreateCategoryAsync(categoryCreateDto);
-            return Ok(product);
+            var category = await _categoryService.CreateCategoryAsync(categoryCreateDto);
+            return Ok(category);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(Guid id, CategoryUpdateDto categoryUpdateDto)
+        {
+            categoryUpdateDto.Id = id;
+            var category = await _categoryService.UpdateCategoryAsync(categoryUpdateDto);
+            return Ok(category);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(Guid id)
+        {
+            var deletedCategory = await _categoryService.DeleteCategoryByIdAsync(id);
+            return Ok(deletedCategory);
         }
     }
 }

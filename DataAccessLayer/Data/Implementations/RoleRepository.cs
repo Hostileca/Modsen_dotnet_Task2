@@ -3,9 +3,9 @@ using DataAccessLayer.Models;
 
 namespace DataAccessLayer.Data.Implementations
 {
-    public class CategoryRepository : BaseRepository<Category>, ICategoryRepository
+    public class RoleRepository : BaseRepository<Role>, IRoleRepository
     {
-        public CategoryRepository(AppDbContext context) : base(context)
+        public RoleRepository(AppDbContext context) : base(context)
         {
         }
     }
