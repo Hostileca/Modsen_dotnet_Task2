@@ -29,13 +29,6 @@ namespace PresentationLayer.Controllers
             return Ok(user);
         }
 
-        //[HttpGet("search/{userName}")]
-        //public async Task<IActionResult> GetUsersByUserName(string userName)
-        //{
-        //    var users = await _userService.GetUserByPredicateAsync(user => user.UserName == userName);
-        //    return Ok(users);
-        //}
-
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserCreateDto userCreateDto)
         {
@@ -43,12 +36,13 @@ namespace PresentationLayer.Controllers
             return Ok(user);
         }
 
-        //[HttpPut("{userUpdateDto.Id}")]
-        //public async Task<IActionResult> UpdateUser(UserUpdateDto userUpdateDto)
-        //{
-        //    var user = await _userService.UpdateUserAsync(userUpdateDto);
-        //    return Ok(user);
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(Guid id, UserUpdateDto userUpdateDto)
+        {
+            userUpdateDto.Id = id;
+            var user = await _userService.UpdateUserAsync(userUpdateDto);
+            return Ok(user);
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id)
