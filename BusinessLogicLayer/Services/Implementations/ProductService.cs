@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Products;
+using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
+using System.Linq.Expressions;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
@@ -84,9 +86,35 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public async Task<IEnumerable<ProductReadDto>> GetProductsByFilter(ProductQuery productQuery)
         {
-            var products = await _productRepository.GetByPredicateAsync(product => product.Name.Contains(productQuery.Name) &&
-            product.Description.Contains(productQuery.Description) &&
-            product.Price < productQuery.MaxPrice && product.Price > productQuery.MinPrice && product.CategoryId == productQuery.CategoryId);
+            Expression<Func<Product, bool>> predicate = product => true;
+
+            if (!string.IsNullOrEmpty(productQuery.Name))
+            {
+                predicate = predicate.And(product => product.Name.Contains(productQuery.Name));
+            }
+
+            if (!string.IsNullOrEmpty(productQuery.Description))
+            {
+                predicate = predicate.And(product => product.Description.Contains(productQuery.Description));
+            }
+
+            if (productQuery.MaxPrice > 0)
+            {
+                predicate = predicate.And(product => product.Price < productQuery.MaxPrice);
+            }
+
+            if (productQuery.MinPrice < 0)
+            {
+                predicate = predicate.And(product => product.Price > productQuery.MinPrice);
+            }
+
+            if (productQuery.CategoryId != Guid.Empty)
+            {
+                predicate = predicate.And(product => product.CategoryId == productQuery.CategoryId);
+            }
+
+            var products = await _productRepository.GetByPredicateAsync(predicate);
+
             return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
     }

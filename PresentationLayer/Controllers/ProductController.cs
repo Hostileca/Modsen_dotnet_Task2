@@ -29,7 +29,7 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
 
-        [HttpGet("filter")]
+        [HttpGet("query")]
         public async Task<IActionResult> GetProductsByName([FromQuery]ProductQuery filter)
         {
             var products = await _productService.GetProductsByFilter(filter);
