@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
 {
-    [Route("api/v1/orderitems")]
+    [Route("api/v1/order_items")]
     [ApiController]
     public class OrderItemController : ControllerBase
     {
@@ -29,13 +29,6 @@ namespace PresentationLayer.Controllers
             return Ok(orderItem);
         }
 
-        //[HttpGet("search/{amount}")]
-        //public async Task<IActionResult> GetUsersByAmount(int amount)
-        //{
-        //    var orderItems = await _orderItemService.GetOrderItemByPredicateAsync(orderItem => orderItem.Amount == amount);
-        //    return Ok(orderItems);
-        //}
-
         [HttpPost]
         public async Task<IActionResult> CreateOrderItem(OrderItemCreateDto orderItemCreateDto)
         {
@@ -43,12 +36,13 @@ namespace PresentationLayer.Controllers
             return Ok(orderItem);
         }
 
-        //[HttpPut("{orderItemUpdateDto.Id}")]
-        //public async Task<IActionResult> UpdateOrderItem(OrderItemUpdateDto orderItemUpdateDto)
-        //{
-        //    var orderItem = await _orderItemService.UpdateOrderItemAsync(orderItemUpdateDto);
-        //    return Ok(orderItem);
-        //}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateOrderItem(Guid id, OrderItemUpdateDto orderItemUpdateDto)
+        {
+            orderItemUpdateDto.Id = id;
+            var orderItem = await _orderItemService.UpdateOrderItemAsync(orderItemUpdateDto);
+            return Ok(orderItem);
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrderItem(Guid id)
