@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccessLayer.Data.Configs
 {
-    internal class RoleConfig : IEntityTypeConfiguration<Role>
+    public class RoleConfig : IEntityTypeConfiguration<Role>
     {
         public void Configure(EntityTypeBuilder<Role> builder)
         {
@@ -16,8 +16,7 @@ namespace DataAccessLayer.Data.Configs
 
             builder.HasMany(r => r.Users)
                    .WithOne(u => u.Role)
-                   .HasForeignKey(u => u.RoleId)
-                   .IsRequired();
+                   .HasForeignKey(u => u.RoleId);
         }
     }
 }

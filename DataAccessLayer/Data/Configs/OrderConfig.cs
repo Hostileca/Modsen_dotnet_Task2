@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccessLayer.Data.Configs
 {
-    internal class OrderConfig : IEntityTypeConfiguration<Order>
+    public class OrderConfig : IEntityTypeConfiguration<Order>
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
@@ -12,11 +12,10 @@ namespace DataAccessLayer.Data.Configs
 
             builder.HasOne(o => o.User)
                    .WithMany(u => u.Orders)
-                   .HasForeignKey(o => o.UserId)
-                   .IsRequired(); 
+                   .HasForeignKey(o => o.UserId);
 
             builder.HasMany(o => o.OrderItems)
-                   .WithOne()
+                   .WithOne(oi => oi.Order)
                    .HasForeignKey(oi => oi.OrderId)
                    .OnDelete(DeleteBehavior.Cascade);
         }

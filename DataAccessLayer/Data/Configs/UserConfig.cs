@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccessLayer.Data.Configs
 {
-    internal class UserConfig : IEntityTypeConfiguration<User>
+    public class UserConfig : IEntityTypeConfiguration<User>
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
@@ -20,6 +20,10 @@ namespace DataAccessLayer.Data.Configs
             builder.HasOne(u => u.Role)
                    .WithMany(r => r.Users)
                    .IsRequired();
+
+            builder.HasMany(u => u.Orders)
+                   .WithOne(o => o.User)
+                   .HasForeignKey(o => o.UserId);
         }
     }
 }
