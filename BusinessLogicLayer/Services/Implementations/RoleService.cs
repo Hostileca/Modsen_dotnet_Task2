@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Roles;
+using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
@@ -29,6 +30,16 @@ namespace BusinessLogicLayer.Services.Implementations
             if (role == null)
                 throw new NotFoundException($"Role not found with id: {id}");
             return _mapper.Map<RoleReadDto>(role);
+        }
+
+        public async Task<IEnumerable<UserReadDto>> GetUsersWithRole(string role)
+        {
+            var founded_role = (await _roleRepository.GetByPredicateAsync(r => r.Name == role)).First();
+            if (founded_role == null)
+            {
+                throw new NotFoundException($"Role with name {role} not found");
+            }
+            return _mapper.Map<IEnumerable<UserReadDto>>(founded_role.Users);
         }
     }
 }
