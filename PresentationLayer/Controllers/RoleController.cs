@@ -16,17 +16,17 @@ namespace PresentationLayer.Controllers
             _roleService = roleService;
         }
 
-        [HttpGet("admins")]
-        public async Task<IActionResult> GetAdmins()
+        [HttpGet]
+        public async Task<IActionResult> GetAllRoles()
         {
-            var admins = await _roleService.GetUsersWithRole(RoleConstants.Admin);
-            return Ok(admins);
+            var roles = await _roleService.GetAllRolesAsync();
+            return Ok(roles);
         }
 
-        [HttpGet("users")]
-        public async Task<IActionResult> GetUsers()
+        [HttpGet("{role}/admins")]
+        public async Task<IActionResult> GetUsersWithRole(string role)
         {
-            var users = await _roleService.GetUsersWithRole(RoleConstants.User);
+            var users = await _roleService.GetUsersWithRole(role);
             return Ok(users);
         }
     }
