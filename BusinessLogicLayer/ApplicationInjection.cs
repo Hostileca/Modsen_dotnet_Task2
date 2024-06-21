@@ -55,7 +55,9 @@ namespace BusinessLogicLayer
         {
             var sqlConnectionBuilder = new SqlConnectionStringBuilder();
             sqlConnectionBuilder.ConnectionString = configuration.GetConnectionString("SQLDbConnection");
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(sqlConnectionBuilder.ConnectionString));
+            services.AddDbContext<AppDbContext>(options => options
+                                                    .UseLazyLoadingProxies()
+                                                    .UseSqlServer(sqlConnectionBuilder.ConnectionString));
             return services;
         }
 
