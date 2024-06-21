@@ -4,10 +4,13 @@ using DataAccessLayer.Data;
 using DataAccessLayer.Data.Implementations;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace BusinessLogicLayer
 {
@@ -20,7 +23,8 @@ namespace BusinessLogicLayer
                 .AutoMapperConfigure()
                 .RepositoriesConfigure()
                 .ServicesConfigure()
-                .DbConfigure(configuration);
+                .DbConfigure(configuration)
+                .ValidationConfigure();
 
             return services;
         }
@@ -58,6 +62,13 @@ namespace BusinessLogicLayer
         private static IServiceCollection AutoMapperConfigure(this IServiceCollection services)
         {
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            return services;
+        }
+
+        private static IServiceCollection ValidationConfigure(this IServiceCollection services)
+        {
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            services.AddFluentValidationAutoValidation();
             return services;
         }
 
