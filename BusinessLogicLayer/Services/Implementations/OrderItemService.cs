@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.OrderItems;
+using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
@@ -31,11 +32,11 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var existingProduct = await _productRepository.GetByIdAsync(orderItemCreateDto.ProductId);
             if (existingProduct == null)
-                throw new KeyNotFoundException($"Product not found with id: {orderItemCreateDto.ProductId}");
+                throw new NotFoundException($"Product not found with id: {orderItemCreateDto.ProductId}");
 
             var existingOrder = await _orderRepository.GetByIdAsync(orderItemCreateDto.OrderId);
             if (existingOrder == null)
-                throw new KeyNotFoundException($"Order not found with id: {orderItemCreateDto.OrderId}");
+                throw new NotFoundException($"Order not found with id: {orderItemCreateDto.OrderId}");
 
             orderItem.Product = existingProduct;
             orderItem.Order = existingOrder;
@@ -50,7 +51,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var orderItem = await _orderItemRepository.GetByIdAsync(id);
             if (orderItem == null)
-                throw new KeyNotFoundException($"Order item not found with id: {id}");
+                throw new NotFoundException($"Order item not found with id: {id}");
 
             _orderItemRepository.Delete(orderItem);
             await _orderItemRepository.SaveChangesAsync();

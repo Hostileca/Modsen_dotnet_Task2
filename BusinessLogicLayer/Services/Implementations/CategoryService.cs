@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Categories;
+using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
@@ -33,7 +34,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
-                throw new KeyNotFoundException($"Category not found with id: {id}");
+                throw new NotFoundException($"Category not found with id: {id}");
 
             _categoryRepository.Delete(category);
             await _categoryRepository.SaveChangesAsync();
@@ -51,7 +52,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null)
-                throw new KeyNotFoundException($"Category not found with id: {id}");
+                throw new NotFoundException($"Category not found with id: {id}");
 
             return _mapper.Map<CategoryDetailedReadDto>(category);
         }
@@ -63,7 +64,7 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var existingCategory = await _categoryRepository.GetByIdAsync(categoryUpdateDto.Id);
             if (existingCategory == null)
-                throw new KeyNotFoundException($"Category not found with id: {categoryUpdateDto.Id}");
+                throw new NotFoundException($"Category not found with id: {categoryUpdateDto.Id}");
 
             var newCategory = _mapper.Map(categoryUpdateDto, existingCategory);
             await _categoryRepository.SaveChangesAsync();

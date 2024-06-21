@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Roles;
+using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 
@@ -26,7 +27,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var role = await _roleRepository.GetByIdAsync(id);
             if (role == null)
-                throw new KeyNotFoundException($"Role not found with id: {id}");
+                throw new NotFoundException($"Role not found with id: {id}");
             return _mapper.Map<RoleReadDto>(role);
         }
     }

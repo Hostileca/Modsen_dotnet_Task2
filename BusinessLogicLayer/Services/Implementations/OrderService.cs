@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Orders;
+using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
@@ -34,7 +35,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var order = await _orderRepository.GetByIdAsync(id);
             if (order == null)
-                throw new KeyNotFoundException($"Order not found with id: {id}");
+                throw new NotFoundException($"Order not found with id: {id}");
 
             _orderRepository.Delete(order);
             await _orderRepository.SaveChangesAsync();
@@ -52,7 +53,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var order = await _orderRepository.GetByIdAsync(id);
             if (order == null)
-                throw new KeyNotFoundException($"Order not found with id: {id}");
+                throw new NotFoundException($"Order not found with id: {id}");
 
             return _mapper.Map<OrderReadDto>(order);
         }
