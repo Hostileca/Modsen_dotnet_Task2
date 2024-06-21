@@ -8,8 +8,6 @@ namespace BusinessLogicLayer.Profiles
     {
         public RoleMappingProfile()
         {
-            CreateMap<RoleCreateDto, Role>();
-            CreateMap<RoleUpdateDto, Role>();
             CreateMap<Role, RoleReadDto>();
         }
     }
