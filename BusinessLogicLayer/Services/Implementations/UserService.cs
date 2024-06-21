@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Users;
+using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
@@ -41,7 +42,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
-                throw new KeyNotFoundException($"User not found with id: {id}");
+                throw new NotFoundException($"User not found with id: {id}");
 
             _userRepository.Delete(user);
             await _userRepository.SaveChangesAsync();
@@ -58,7 +59,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
-                throw new KeyNotFoundException($"User not found with id: {id}");
+                throw new NotFoundException($"User not found with id: {id}");
             return _mapper.Map<UserReadDto>(user);
         }
 
@@ -69,11 +70,11 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var existingUser = await _userRepository.GetByIdAsync(userUpdateDto.Id);
             if (existingUser == null)
-                throw new KeyNotFoundException($"User not found with id: {userUpdateDto.Id}");
+                throw new NotFoundException($"User not found with id: {userUpdateDto.Id}");
 
             var existingRole = await _roleRepository.GetByIdAsync(userUpdateDto.RoleId);
             if (existingRole == null)
-                throw new KeyNotFoundException($"Role not found with id: {userUpdateDto.RoleId}");
+                throw new NotFoundException($"Role not found with id: {userUpdateDto.RoleId}");
 
             existingUser.HashedPassword = PasswordHasher.HashPassword(userUpdateDto.Password);
 

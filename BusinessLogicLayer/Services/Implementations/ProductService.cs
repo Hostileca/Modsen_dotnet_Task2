@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Dtos.Products;
+using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
@@ -30,7 +31,7 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var existingCategory = await _categoryRepository.GetByIdAsync(productCreateDto.CategoryId);
             if (existingCategory == null)
-                throw new KeyNotFoundException($"Category not found with id: {productCreateDto.CategoryId}");
+                throw new NotFoundException($"Category not found with id: {productCreateDto.CategoryId}");
 
             product.Category = existingCategory;
 
@@ -43,7 +44,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
-                throw new KeyNotFoundException($"Product not found with id: {id}");
+                throw new NotFoundException($"Product not found with id: {id}");
 
             _productRepository.Delete(product);
             await _productRepository.SaveChangesAsync();
@@ -60,7 +61,7 @@ namespace BusinessLogicLayer.Services.Implementations
         {
             var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
-                throw new KeyNotFoundException($"Product not found with id: {id}");
+                throw new NotFoundException($"Product not found with id: {id}");
             return _mapper.Map<ProductDetailedReadDto>(product);
         }
 
@@ -71,11 +72,11 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var existingProduct = await _productRepository.GetByIdAsync(productUpdateDto.Id);
             if (existingProduct == null)
-                throw new KeyNotFoundException($"Product not found with id: {productUpdateDto.Id}");
+                throw new NotFoundException($"Product not found with id: {productUpdateDto.Id}");
 
             var existingCategory = await _categoryRepository.GetByIdAsync(productUpdateDto.CategoryId);
             if (existingCategory == null)
-                throw new KeyNotFoundException($"Category not found with id: {productUpdateDto.CategoryId}");
+                throw new NotFoundException($"Category not found with id: {productUpdateDto.CategoryId}");
 
             existingProduct.Category = existingCategory;
 

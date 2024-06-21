@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessLogicLayer.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Text.Json;
 
@@ -23,11 +24,11 @@ namespace PresentationLayer.Middleware
             {
                 await context.Response.WriteAsync(GenerateErrorDetails(context, ex, StatusCodes.Status409Conflict));
             }
-            catch (KeyNotFoundException ex)
+            catch (NotFoundException ex)
             {
                 await context.Response.WriteAsync(GenerateErrorDetails(context, ex, StatusCodes.Status404NotFound));
             }
-            catch (UnauthorizedAccessException ex)
+            catch (UnauthorizedException ex)
             {
                 await context.Response.WriteAsync(GenerateErrorDetails(context, ex, StatusCodes.Status401Unauthorized));
             }
