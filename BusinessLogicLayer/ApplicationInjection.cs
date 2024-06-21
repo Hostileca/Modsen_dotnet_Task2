@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Services.Implementations;
+﻿using BusinessLogicLayer.Services.Algorithms;
+using BusinessLogicLayer.Services.Implementations;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Data.Implementations;
@@ -42,6 +43,8 @@ namespace BusinessLogicLayer
 
         private static IServiceCollection ServicesConfigure(this IServiceCollection services)
         {
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IOrderService, OrderService>();

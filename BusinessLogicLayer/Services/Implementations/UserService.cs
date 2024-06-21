@@ -12,12 +12,14 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class UserService : IUserService
     {
+        private readonly IPasswordHasher _passwordHasher;
         private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IMapper _mapper;
 
-        public UserService(IUserRepository userRepository, IRoleRepository roleRepository, IMapper mapper)
+        public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IRoleRepository roleRepository, IMapper mapper)
         {
+            _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
             _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
             _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -30,7 +32,7 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var user = _mapper.Map<User>(userCreateDto);
 
-            user.HashedPassword = PasswordHasher.HashPassword(userCreateDto.Password);
+            user.HashedPassword = _passwordHasher.HashPassword(userCreateDto.Password);
             user.Role = (await _roleRepository.GetByPredicateAsync(r => r.Name == RoleConstants.User)).First();
 
             await _userRepository.AddAsync(user);
@@ -76,7 +78,7 @@ namespace BusinessLogicLayer.Services.Implementations
             if (existingRole == null)
                 throw new NotFoundException($"Role not found with id: {userUpdateDto.RoleId}");
 
-            existingUser.HashedPassword = PasswordHasher.HashPassword(userUpdateDto.Password);
+            existingUser.HashedPassword = _passwordHasher.HashPassword(userUpdateDto.Password);
 
             var newUser = _mapper.Map(userUpdateDto, existingUser);
             await _userRepository.SaveChangesAsync();
