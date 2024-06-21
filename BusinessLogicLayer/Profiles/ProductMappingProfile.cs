@@ -11,6 +11,7 @@ namespace BusinessLogicLayer.Profiles
             CreateMap<ProductCreateDto, Product>();
             CreateMap<ProductUpdateDto, Product>();
             CreateMap<Product, ProductReadDto>();
+            CreateMap<Product, ProductDetailedReadDto>();
         }
     }
 }

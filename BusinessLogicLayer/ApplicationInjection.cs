@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Services.Implementations;
+﻿using BusinessLogicLayer.Services.Algorithms;
+using BusinessLogicLayer.Services.Implementations;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data;
 using DataAccessLayer.Data.Implementations;
@@ -42,6 +43,8 @@ namespace BusinessLogicLayer
 
         private static IServiceCollection ServicesConfigure(this IServiceCollection services)
         {
+            services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IOrderService, OrderService>();
@@ -55,7 +58,9 @@ namespace BusinessLogicLayer
         {
             var sqlConnectionBuilder = new SqlConnectionStringBuilder();
             sqlConnectionBuilder.ConnectionString = configuration.GetConnectionString("SQLDbConnection");
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(sqlConnectionBuilder.ConnectionString));
+            services.AddDbContext<AppDbContext>(options => options
+                                                    .UseLazyLoadingProxies()
+                                                    .UseSqlServer(sqlConnectionBuilder.ConnectionString));
             return services;
         }
 
