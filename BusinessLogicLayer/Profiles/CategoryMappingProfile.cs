@@ -11,6 +11,7 @@ namespace BusinessLogicLayer.Profiles
             CreateMap<CategoryCreateDto, Category>();
             CreateMap<CategoryUpdateDto, Category>();
             CreateMap<Category, CategoryReadDto>();
+            CreateMap<Category, CategoryDetailedReadDto>();
         }
     }
 }
