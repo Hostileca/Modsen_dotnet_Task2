@@ -4,7 +4,7 @@ namespace Tests.Profiles
 {
     public class OrderItemMappingProfileTests
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public OrderItemMappingProfileTests()
         {
@@ -35,9 +35,8 @@ namespace Tests.Profiles
 
             var orderItem = _mapper.Map<OrderItem>(orderItemCreateDto);
 
-            Assert.Equal(orderItemCreateDto.Amount, orderItem.Amount);
-            Assert.Equal(orderItemCreateDto.OrderId, orderItem.OrderId);
-            Assert.Equal(orderItemCreateDto.ProductId, orderItem.ProductId);
+            orderItem.Should().BeEquivalentTo(orderItemCreateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -61,10 +60,12 @@ namespace Tests.Profiles
 
             var orderItemReadDto = _mapper.Map<OrderItemReadDto>(orderItem);
 
-            Assert.Equal(orderItem.Amount, orderItemReadDto.Amount);
-            Assert.NotNull(orderItemReadDto.Product);
-            Assert.Equal(orderItem.Product.Name, orderItemReadDto.Product.Name);
-            Assert.Equal(orderItem.Product.Price, orderItemReadDto.Product.Price);
+            orderItemReadDto.Should().BeEquivalentTo(orderItem, options => options
+                .ExcludingMissingMembers()
+                .Excluding(dto => dto.Product));
+
+            orderItemReadDto.Product.Should().BeEquivalentTo(product, options => options
+                .ExcludingMissingMembers());
         }
     }
 }

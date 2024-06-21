@@ -4,7 +4,7 @@ namespace Tests.Profiles
 {
     public class UserMappingProfileTests
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public UserMappingProfileTests()
         {
@@ -34,8 +34,8 @@ namespace Tests.Profiles
 
             var user = _mapper.Map<User>(userCreateDto);
 
-            Assert.Equal(userCreateDto.UserName, user.UserName);
-            Assert.NotNull(user.HashedPassword);
+            user.UserName.Should().Be(userCreateDto.UserName);
+            user.HashedPassword.Should().NotBeNull();
         }
 
         [Fact]
@@ -51,10 +51,10 @@ namespace Tests.Profiles
 
             var user = _mapper.Map<User>(userUpdateDto);
 
-            Assert.Equal(userUpdateDto.Id, user.Id);
-            Assert.Equal(userUpdateDto.UserName, user.UserName);
-            Assert.NotNull(user.HashedPassword);
-            Assert.Equal(userUpdateDto.RoleId, user.RoleId);
+            user.Should().BeEquivalentTo(userUpdateDto, options => options
+                .Excluding(dto => dto.Password)
+                .ExcludingMissingMembers());
+            user.HashedPassword.Should().NotBeNull();
         }
 
         [Fact]
@@ -75,10 +75,11 @@ namespace Tests.Profiles
 
             var userReadDto = _mapper.Map<UserReadDto>(user);
 
-            Assert.Equal(user.Id, userReadDto.Id);
-            Assert.Equal(user.UserName, userReadDto.UserName);
-            Assert.Equal(user.Role.Id, userReadDto.Role.Id);
-            Assert.Equal(user.Role.Name, userReadDto.Role.Role);
+            userReadDto.Should().BeEquivalentTo(user, options => options
+                .Excluding(u => u.Role)
+                .ExcludingMissingMembers());
+            userReadDto.Role.Id.Should().Be(user.Role.Id);
+            userReadDto.Role.Role.Should().Be(user.Role.Name);
         }
     }
 }

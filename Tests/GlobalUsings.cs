@@ -4,3 +4,4 @@ global using AutoMapper;
 global using BusinessLogicLayer.Services.Interfaces;
 global using BusinessLogicLayer.Profiles;
 global using DataAccessLayer.Models;
+global using FluentAssertions;

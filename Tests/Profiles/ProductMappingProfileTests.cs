@@ -1,11 +1,10 @@
 ﻿using BusinessLogicLayer.Dtos.Products;
 
-
 namespace Tests.Profiles
 {
     public class ProductMappingProfileTests
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public ProductMappingProfileTests()
         {
@@ -36,10 +35,8 @@ namespace Tests.Profiles
 
             var product = _mapper.Map<Product>(productCreateDto);
 
-            Assert.Equal(productCreateDto.Name, product.Name);
-            Assert.Equal(productCreateDto.Description, product.Description);
-            Assert.Equal(productCreateDto.Price, product.Price);
-            Assert.Equal(productCreateDto.CategoryId, product.CategoryId);
+            product.Should().BeEquivalentTo(productCreateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -56,11 +53,8 @@ namespace Tests.Profiles
 
             var product = _mapper.Map<Product>(productUpdateDto);
 
-            Assert.Equal(productUpdateDto.Id, product.Id);
-            Assert.Equal(productUpdateDto.Name, product.Name);
-            Assert.Equal(productUpdateDto.Description, product.Description);
-            Assert.Equal(productUpdateDto.Price, product.Price);
-            Assert.Equal(productUpdateDto.CategoryId, product.CategoryId);
+            product.Should().BeEquivalentTo(productUpdateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -77,11 +71,8 @@ namespace Tests.Profiles
 
             var productReadDto = _mapper.Map<ProductReadDto>(product);
 
-            Assert.Equal(product.Id, productReadDto.Id);
-            Assert.Equal(product.Name, productReadDto.Name);
-            Assert.Equal(product.Description, productReadDto.Description);
-            Assert.Equal(product.Price, productReadDto.Price);
-            Assert.Equal(product.CategoryId, productReadDto.CategoryId);
+            productReadDto.Should().BeEquivalentTo(product, options => options
+                .ExcludingMissingMembers());
         }
     }
 }

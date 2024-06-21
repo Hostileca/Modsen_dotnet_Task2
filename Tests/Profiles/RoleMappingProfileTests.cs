@@ -4,7 +4,7 @@ namespace Tests.Profiles
 {
     public class RoleMappingProfileTests
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public RoleMappingProfileTests()
         {
@@ -32,7 +32,8 @@ namespace Tests.Profiles
 
             var role = _mapper.Map<Role>(roleCreateDto);
 
-            Assert.Equal(roleCreateDto.Name, role.Name);
+            role.Should().BeEquivalentTo(roleCreateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -46,8 +47,8 @@ namespace Tests.Profiles
 
             var role = _mapper.Map<Role>(roleUpdateDto);
 
-            Assert.Equal(roleUpdateDto.Id, role.Id);
-            Assert.Equal(roleUpdateDto.Name, role.Name);
+            role.Should().BeEquivalentTo(roleUpdateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -61,8 +62,11 @@ namespace Tests.Profiles
 
             var roleReadDto = _mapper.Map<RoleReadDto>(role);
 
-            Assert.Equal(role.Id, roleReadDto.Id);
-            Assert.Equal(role.Name, roleReadDto.Role);
+            roleReadDto.Should().BeEquivalentTo(role, options => options
+                .ExcludingMissingMembers()
+                .Excluding(dto => dto.Name));
+
+            roleReadDto.Role.Should().Be(role.Name);
         }
     }
 }

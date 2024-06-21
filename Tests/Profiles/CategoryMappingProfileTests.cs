@@ -4,7 +4,7 @@ namespace Tests.Profiles
 {
     public class CategoryMappingProfileTests
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public CategoryMappingProfileTests()
         {
@@ -32,7 +32,8 @@ namespace Tests.Profiles
 
             var category = _mapper.Map<Category>(categoryCreateDto);
 
-            Assert.Equal(categoryCreateDto.Name, category.Name);
+            category.Should().BeEquivalentTo(categoryCreateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -45,9 +46,9 @@ namespace Tests.Profiles
             };
 
             var category = _mapper.Map<Category>(categoryUpdateDto);
-            
-            Assert.Equal(categoryUpdateDto.Id, category.Id);
-            Assert.Equal(categoryUpdateDto.Name, category.Name);
+
+            category.Should().BeEquivalentTo(categoryUpdateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -61,8 +62,8 @@ namespace Tests.Profiles
 
             var categoryReadDto = _mapper.Map<CategoryReadDto>(category);
 
-            Assert.Equal(category.Id, categoryReadDto.Id);
-            Assert.Equal(category.Name, categoryReadDto.Name);
+            categoryReadDto.Should().BeEquivalentTo(category, options => options
+                .ExcludingMissingMembers());
         }
     }
 }

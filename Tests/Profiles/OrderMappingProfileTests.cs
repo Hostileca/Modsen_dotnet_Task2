@@ -5,7 +5,7 @@ namespace Tests.Profiles
 {
     public class OrderMappingProfileTests
     {
-        private IMapper _mapper;
+        private readonly IMapper _mapper;
 
         public OrderMappingProfileTests()
         {
@@ -42,10 +42,9 @@ namespace Tests.Profiles
 
             var order = _mapper.Map<Order>(orderCreateDto);
 
-            Assert.Single(order.OrderItems);
-            Assert.Equal(orderItemCreateDto.Amount, order.OrderItems.First().Amount);
-            Assert.Equal(orderItemCreateDto.OrderId, order.OrderItems.First().OrderId);
-            Assert.Equal(orderItemCreateDto.ProductId, order.OrderItems.First().ProductId);
+            order.OrderItems.Should().HaveCount(1);
+            order.OrderItems.First().Should().BeEquivalentTo(orderItemCreateDto, options => options
+                .ExcludingMissingMembers());
         }
 
         [Fact]
@@ -76,11 +75,17 @@ namespace Tests.Profiles
 
             var orderReadDto = _mapper.Map<OrderReadDto>(order);
 
-            Assert.Equal(order.Id, orderReadDto.Id);
-            Assert.Single(orderReadDto.OrderItems);
-            Assert.Equal(orderItem.Amount, orderReadDto.OrderItems.First().Amount);
-            Assert.Equal(orderItem.Product.Name, orderReadDto.OrderItems.First().Product.Name);
-            Assert.Equal(orderItem.Product.Price, orderReadDto.OrderItems.First().Product.Price);
+            orderReadDto.Should().BeEquivalentTo(order, options => options
+                .ExcludingMissingMembers()
+                .Excluding(dto => dto.OrderItems));
+
+            orderReadDto.OrderItems.Should().HaveCount(1);
+            orderReadDto.OrderItems.First().Should().BeEquivalentTo(orderItem, options => options
+                .ExcludingMissingMembers()
+                .Excluding(dto => dto.Product));
+
+            orderReadDto.OrderItems.First().Product.Should().BeEquivalentTo(product, options => options
+                .ExcludingMissingMembers());
         }
     }
 }
