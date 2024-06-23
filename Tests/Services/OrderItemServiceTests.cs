@@ -5,207 +5,156 @@ namespace Tests.Services
 {
     public class OrderItemServiceTests
     {
-        private readonly Mock<IOrderItemService> _mockOrderItemService;
+        private readonly Mock<IRepository<OrderItem>> _mockOrderItemRepository;
+        private readonly Mock<IRepository<Product>> _mockProductRepository;
+        private readonly Mock<IRepository<Order>> _mockOrderRepository;
+        private readonly Mock<IMapper> _mockMapper;
+        private readonly IOrderItemService _orderItemService;
 
         public OrderItemServiceTests()
         {
-            _mockOrderItemService = new Mock<IOrderItemService>();
+            _mockOrderItemRepository = new Mock<IRepository<OrderItem>>();
+            _mockProductRepository = new Mock<IRepository<Product>>();
+            _mockOrderRepository = new Mock<IRepository<Order>>();
+            _mockMapper = new Mock<IMapper>();
+            _orderItemService = new OrderItemService(
+                _mockOrderItemRepository.Object,
+                _mockProductRepository.Object,
+                _mockOrderRepository.Object,
+                _mockMapper.Object);
         }
 
         [Fact]
-        public async Task CreateOrderItemAsync_ValidOrderItemCreateDto_CreateOrderItemAndReturnDto()
+        public async Task CreateOrderItemAsync_ValidDto_ReturnsOrderItemReadDto()
         {
-            var orderItemCreateDto = new OrderItemCreateDto
+            var createDto = new OrderItemCreateDto
             {
-                Amount = 2,
+                Amount = 5,
                 OrderId = Guid.NewGuid(),
                 ProductId = Guid.NewGuid()
             };
 
-            var orderItemReadDto = new OrderItemReadDto
+            var product = new Product { Id = createDto.ProductId, Name = "Test Product" };
+            var order = new Order { Id = createDto.OrderId };
+
+            var orderItem = new OrderItem
             {
-                Amount = 2,
-                Product = new ProductReadDto
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Test Product",
-                    Description = "Test Description",
-                    Price = 10.99f,
-                    CategoryId = Guid.NewGuid()
-                }
+                Id = Guid.NewGuid(),
+                Amount = createDto.Amount,
+                OrderId = createDto.OrderId,
+                ProductId = createDto.ProductId,
+                Product = product,
+                Order = order
             };
 
-            _mockOrderItemService.Setup(s => s.CreateOrderItemAsync(orderItemCreateDto))
-                            .ReturnsAsync(orderItemReadDto);
-
-            var result = await _mockOrderItemService.Object.CreateOrderItemAsync(orderItemCreateDto);
-
-            Assert.NotNull(result);
-            Assert.Equal(orderItemReadDto, result);
-        }
-
-        [Fact]
-        public async Task DeleteOrderItemByIdAsync_ExistingOrderItemId_DeleteOrderItemAndReturnDto()
-        {
-            var orderItemId = Guid.NewGuid();
-            var orderItemReadDto = new OrderItemReadDto
+            var expectedReadDto = new OrderItemReadDto
             {
-                Amount = 1,
-                Product = new ProductReadDto
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Test Product",
-                    Description = "Test Description",
-                    Price = 10.99f,
-                    CategoryId = Guid.NewGuid()
-                }
+                Amount = orderItem.Amount,
+                Product = new ProductReadDto { Id = product.Id, Name = product.Name }
             };
 
-            _mockOrderItemService.Setup(s => s.DeleteOrderItemByIdAsync(orderItemId))
-                            .ReturnsAsync(orderItemReadDto);
+            _mockMapper.Setup(m => m.Map<OrderItem>(createDto)).Returns(orderItem);
+            _mockProductRepository.Setup(repo => repo.GetByIdAsync(createDto.ProductId)).ReturnsAsync(product);
+            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(createDto.OrderId)).ReturnsAsync(order);
+            _mockOrderItemRepository.Setup(repo => repo.AddAsync(orderItem)).Returns(Task.CompletedTask);
+            _mockOrderItemRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            _mockMapper.Setup(m => m.Map<OrderItemReadDto>(orderItem)).Returns(expectedReadDto);
 
-            var result = await _mockOrderItemService.Object.DeleteOrderItemByIdAsync(orderItemId);
+            var result = await _orderItemService.CreateOrderItemAsync(createDto);
 
-            Assert.NotNull(result);
-            Assert.Equal(orderItemReadDto, result);
+            result.Should().NotBeNull();
+            result.Amount.Should().Be(createDto.Amount);
+            result.Product.Should().NotBeNull();
+            result.Product.Id.Should().Be(product.Id);
+            result.Product.Name.Should().Be(product.Name);
         }
 
         [Fact]
-        public async Task GetAllOrderItemsAsync_ReturnsAllOrderItems()
+        public async Task DeleteOrderItemByIdAsync_ExistingId_ReturnsOrderItemReadDto()
         {
-            var orderItemReadDtos = new List<OrderItemReadDto>
+            var orderId = Guid.NewGuid();
+            var orderItem = new OrderItem { Id = orderId, Amount = 5, ProductId = Guid.NewGuid(), OrderId = orderId };
+            var expectedReadDto = new OrderItemReadDto { Amount = orderItem.Amount };
+
+            _mockOrderItemRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(orderItem);
+            _mockOrderItemRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            _mockMapper.Setup(m => m.Map<OrderItemReadDto>(orderItem)).Returns(expectedReadDto);
+
+            var result = await _orderItemService.DeleteOrderItemByIdAsync(orderId);
+
+            result.Should().NotBeNull();
+            result.Amount.Should().Be(5);
+        }
+
+        [Fact]
+        public async Task GetAllOrderItemsAsync_NoConditions_ReturnsListOfOrderItemReadDto()
+        {
+            var orderItems = new List<OrderItem>
             {
-                new OrderItemReadDto
-                {
-                    Amount = 1,
-                    Product = new ProductReadDto
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Test Product 1",
-                        Description = "Test Description 1",
-                        Price = 10.99f,
-                        CategoryId = Guid.NewGuid()
-                    }
-                },
-                new OrderItemReadDto
-                {
-                    Amount = 2,
-                    Product = new ProductReadDto
-                    {
-                        Id = Guid.NewGuid(),
-                        Name = "Test Product 2",
-                        Description = "Test Description 2",
-                        Price = 20.99f,
-                        CategoryId = Guid.NewGuid()
-                    }
-                }
+                new OrderItem { Id = Guid.NewGuid(), Amount = 5, ProductId = Guid.NewGuid(), OrderId = Guid.NewGuid() },
+                new OrderItem { Id = Guid.NewGuid(), Amount = 10, ProductId = Guid.NewGuid(), OrderId = Guid.NewGuid() }
             };
 
-            _mockOrderItemService.Setup(s => s.GetAllOrderItemsAsync())
-                            .ReturnsAsync(orderItemReadDtos);
-
-            var result = await _mockOrderItemService.Object.GetAllOrderItemsAsync();
-
-            Assert.NotNull(result);
-            Assert.Collection(result,
-                item => Assert.Equal(orderItemReadDtos[0], item),
-                item => Assert.Equal(orderItemReadDtos[1], item));
-        }
-
-        [Fact]
-        public async Task GetOrderItemByIdAsync_ExistingOrderItemId_ReturnsOrderItem()
-        {
-            var orderItemId = Guid.NewGuid();
-            var orderItemReadDto = new OrderItemReadDto
+            var expectedReadDtos = new List<OrderItemReadDto>
             {
-                Amount = 1,
-                Product = new ProductReadDto
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "Test Product",
-                    Description = "Test Description",
-                    Price = 10.99f,
-                    CategoryId = Guid.NewGuid()
-                }
+                new OrderItemReadDto { Amount = orderItems[0].Amount },
+                new OrderItemReadDto { Amount = orderItems[1].Amount }
             };
 
-            _mockOrderItemService.Setup(s => s.GetOrderItemByIdAsync(orderItemId))
-                            .ReturnsAsync(orderItemReadDto);
+            _mockOrderItemRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(orderItems);
+            _mockMapper.Setup(m => m.Map<IEnumerable<OrderItemReadDto>>(orderItems)).Returns(expectedReadDtos);
 
-            var result = await _mockOrderItemService.Object.GetOrderItemByIdAsync(orderItemId);
+            var result = await _orderItemService.GetAllOrderItemsAsync();
 
-            Assert.NotNull(result);
-            Assert.Equal(orderItemReadDto, result);
+            result.Should().NotBeNull();
+            result.Should().HaveCount(2);
+            result.Should().BeEquivalentTo(expectedReadDtos);
         }
 
         [Fact]
-        public async Task CreateOrderItemAsync_NullOrderItemCreateDto_ThrowsArgumentNullException()
+        public async Task GetOrderItemByIdAsync_ExistingId_ReturnsOrderItemReadDto()
         {
-            OrderItemCreateDto orderItemCreateDto = null;
+            var orderId = Guid.NewGuid();
+            var orderItem = new OrderItem { Id = orderId, Amount = 5, ProductId = Guid.NewGuid(), OrderId = orderId };
+            var expectedReadDto = new OrderItemReadDto { Amount = orderItem.Amount };
 
-            _mockOrderItemService.Setup(s => s.CreateOrderItemAsync(null))
-                            .ThrowsAsync(new ArgumentNullException());
+            _mockOrderItemRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(orderItem);
+            _mockMapper.Setup(m => m.Map<OrderItemReadDto>(orderItem)).Returns(expectedReadDto);
 
-            var exception = await Assert.ThrowsAsync<ArgumentNullException>(() => _mockOrderItemService.Object.CreateOrderItemAsync(orderItemCreateDto));
-            Assert.Equal(typeof(ArgumentNullException), exception.GetType());
+            var result = await _orderItemService.GetOrderItemByIdAsync(orderId);
+
+            result.Should().NotBeNull();
+            result.Amount.Should().Be(5);
         }
 
         [Fact]
-        public async Task CreateOrderItemAsync_NonExistingProductId_ThrowsKeyNotFoundException()
+        public async Task CreateOrderItemAsync_NullDto_ThrowsArgumentNullException()
         {
-            var orderItemCreateDto = new OrderItemCreateDto
-            {
-                Amount = 2,
-                OrderId = Guid.NewGuid(),
-                ProductId = Guid.NewGuid()
-            };
+            Func<Task> action = async () => await _orderItemService.CreateOrderItemAsync(null);
 
-            _mockOrderItemService.Setup(s => s.CreateOrderItemAsync(orderItemCreateDto))
-                            .ThrowsAsync(new KeyNotFoundException($"Product not found with id: {orderItemCreateDto.ProductId}"));
-
-            var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => _mockOrderItemService.Object.CreateOrderItemAsync(orderItemCreateDto));
-            Assert.Equal(typeof(KeyNotFoundException), exception.GetType());
+            await action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         [Fact]
-        public async Task CreateOrderItemAsync_NonExistingOrderId_ThrowsKeyNotFoundException()
+        public async Task DeleteOrderItemByIdAsync_NonExistingId_ThrowsKeyNotFoundException()
         {
-            var orderItemCreateDto = new OrderItemCreateDto
-            {
-                Amount = 2,
-                OrderId = Guid.NewGuid(),
-                ProductId = Guid.NewGuid()
-            };
+            var orderId = Guid.NewGuid();
+            _mockOrderItemRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync((OrderItem)null);
 
-            _mockOrderItemService.Setup(s => s.CreateOrderItemAsync(orderItemCreateDto))
-                            .ThrowsAsync(new KeyNotFoundException($"Order not found with id: {orderItemCreateDto.OrderId}"));
+            Func<Task> action = async () => await _orderItemService.DeleteOrderItemByIdAsync(orderId);
 
-            var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => _mockOrderItemService.Object.CreateOrderItemAsync(orderItemCreateDto));
-            Assert.Equal(typeof(KeyNotFoundException), exception.GetType());
+            await action.Should().ThrowAsync<KeyNotFoundException>();
         }
 
         [Fact]
-        public async Task DeleteOrderItemByIdAsync_NonExistingOrderItemId_ThrowsKeyNotFoundException()
+        public async Task GetOrderItemByIdAsync_NonExistingId_ThrowsKeyNotFoundException()
         {
-            var orderItemId = Guid.NewGuid();
+            var orderId = Guid.NewGuid();
+            _mockOrderItemRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync((OrderItem)null);
 
-            _mockOrderItemService.Setup(s => s.DeleteOrderItemByIdAsync(orderItemId))
-                            .ThrowsAsync(new KeyNotFoundException($"Order item not found with id: {orderItemId}"));
+            Func<Task> action = async () => await _orderItemService.GetOrderItemByIdAsync(orderId);
 
-            var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => _mockOrderItemService.Object.DeleteOrderItemByIdAsync(orderItemId));
-            Assert.Equal(typeof(KeyNotFoundException), exception.GetType());
-        }
-
-        [Fact]
-        public async Task GetOrderItemByIdAsync_NonExistingOrderItemId_ThrowsKeyNotFoundException()
-        {
-            var orderItemId = Guid.NewGuid();
-
-            _mockOrderItemService.Setup(s => s.GetOrderItemByIdAsync(orderItemId))
-                            .ThrowsAsync(new KeyNotFoundException($"Order item not found with id: {orderItemId}"));
-
-            var exception = await Assert.ThrowsAsync<KeyNotFoundException>(() => _mockOrderItemService.Object.GetOrderItemByIdAsync(orderItemId));
-            Assert.Equal(typeof(KeyNotFoundException), exception.GetType());
+            await action.Should().ThrowAsync<KeyNotFoundException>();
         }
     }
 }
