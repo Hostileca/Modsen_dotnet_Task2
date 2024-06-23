@@ -8,10 +8,17 @@ namespace BusinessLogicLayer.Profiles
     {
         public ProductMappingProfile()
         {
-            CreateMap<ProductCreateDto, Product>();
-            CreateMap<ProductUpdateDto, Product>();
+            CreateMap<ProductCreateDto, Product>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Category, opt => opt.Ignore());
+
+            CreateMap<ProductUpdateDto, Product>()
+                .ForMember(dest => dest.Category, opt => opt.Ignore());
+
             CreateMap<Product, ProductReadDto>();
-            CreateMap<Product, ProductDetailedReadDto>();
+
+            CreateMap<Product, ProductDetailedReadDto>()
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category));
         }
     }
 }

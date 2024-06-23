@@ -5,8 +5,6 @@ using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BusinessLogicLayer.Services.Implementations
 {
