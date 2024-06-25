@@ -8,8 +8,13 @@ namespace BusinessLogicLayer.Profiles
     {
         public OrderItemMappingProfile()
         {
-            CreateMap<OrderItemCreateDto, OrderItem>();
-            CreateMap<OrderItem, OrderItemReadDto>();
+            CreateMap<OrderItemCreateDto, OrderItem>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Order, opt => opt.Ignore())
+                .ForMember(dest => dest.Product, opt => opt.Ignore());
+
+            CreateMap<OrderItem, OrderItemReadDto>()
+                .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product));
         }
     }
 }
