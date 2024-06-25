@@ -1,8 +1,7 @@
 ﻿namespace DataAccessLayer.Models
 {
-    public class Category
+    public class Category : BaseModel
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
         public virtual ICollection<Product> Products { get; set; }
     }
