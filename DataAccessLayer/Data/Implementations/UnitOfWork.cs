@@ -6,63 +6,36 @@ namespace DataAccessLayer.Data.Implementations
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _dbContext;
-        private Dictionary<Type, object> _repositories;
+        private readonly Dictionary<Type, Func<AppDbContext, object>> _repositoryFactories;
 
         public UnitOfWork(AppDbContext dbContext)
         {
-            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _repositories = new Dictionary<Type, object>();
+            _dbContext = dbContext;
+            _repositoryFactories = new Dictionary<Type, Func<AppDbContext, object>>
+            {
+                { typeof(User), ctx => new UserRepository(ctx) },
+                { typeof(Role), ctx => new RoleRepository(ctx) },
+                { typeof(Product), ctx => new ProductRepository(ctx) },
+                { typeof(Category), ctx => new CategoryRepository(ctx) },
+                { typeof(Order), ctx => new OrderRepository(ctx) },
+                { typeof(OrderItem), ctx => new OrderItemRepository(ctx) }
+            };
         }
 
         public IRepository<TEntity> GetRepository<TEntity>() where TEntity : class
         {
-            if (_repositories == null)
-                _repositories = new Dictionary<Type, object>();
-
-            var entityType = typeof(TEntity);
-            if (!_repositories.ContainsKey(entityType))
+            if (_repositoryFactories.TryGetValue(typeof(TEntity), out var factory))
             {
-                _repositories[entityType] = CreateRepository<TEntity>();
-            }
-
-            return (IRepository<TEntity>)_repositories[entityType];
-        }
-
-        private object CreateRepository<TEntity>() where TEntity : class
-        {
-            if (typeof(TEntity) == typeof(User))
-            {
-                return new UserRepository(_dbContext);
-            }
-            else if (typeof(TEntity) == typeof(Role))
-            {
-                return new RoleRepository(_dbContext);
-            }
-            else if (typeof(TEntity) == typeof(Product))
-            {
-                return new ProductRepository(_dbContext);
-            }
-            else if (typeof(TEntity) == typeof(Category))
-            {
-                return new CategoryRepository(_dbContext);
-            }
-            else if (typeof(TEntity) == typeof(Order))
-            {
-                return new OrderRepository(_dbContext);
-            }
-            else if (typeof(TEntity) == typeof(OrderItem))
-            {
-                return new OrderItemRepository(_dbContext);
+                var repository = (IRepository<TEntity>)factory.Invoke(_dbContext);
+                return repository;
             }
             else
-            {
-                throw new InvalidOperationException($"Repository for type {typeof(TEntity).Name} not found.");
-            }
+                throw new InvalidOperationException($"No repository factory found for type {typeof(TEntity).Name}.");
         }
 
-        public async Task<int> SaveChangesAsync()
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            return await _dbContext.SaveChangesAsync();
+            return await _dbContext.SaveChangesAsync(cancellationToken);
         }
 
         public void Dispose()

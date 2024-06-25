@@ -14,8 +14,8 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public OrderService(IOrderRepository orderRepository, IMapper mapper)
         {
-            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _orderRepository = orderRepository;
+            _mapper = mapper;
         }
 
         public async Task<OrderReadDto> CreateOrderAsync(OrderCreateDto orderCreateDto, CancellationToken cancellationToken = default)

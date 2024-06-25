@@ -14,8 +14,8 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public RoleService(IRoleRepository roleRepository, IMapper mapper)
         {
-            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _roleRepository = roleRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<RoleReadDto>> GetAllRolesAsync(CancellationToken cancellationToken = default)
@@ -26,17 +26,17 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public async Task<RoleReadDto> GetRoleByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var role = await _roleRepository.GetByIdAsync(id, cancellationToken);
-            if (role == null)
+            var roleName = await _roleRepository.GetByIdAsync(id, cancellationToken);
+            if (roleName == null)
             {
                 throw new NotFoundException($"Role not found with id: {id}");
             }
-            return _mapper.Map<RoleReadDto>(role);
+            return _mapper.Map<RoleReadDto>(roleName);
         }
 
         public async Task<IEnumerable<UserReadDto>> GetUsersWithRole(string role, CancellationToken cancellationToken = default)
         {
-            var founded_role = (await _roleRepository.GetByPredicateAsync(r => r.Name == role, cancellationToken)).First();
+            var founded_role = (await _roleRepository.GetByPredicateAsync(r => r.Name == role, cancellationToken)).FirstOrDefault();
             if (founded_role == null)
             {
                 throw new NotFoundException($"Role with name {role} not found");
