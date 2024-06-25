@@ -108,11 +108,11 @@ namespace BusinessLogicLayer
         public static IServiceProvider StartApplication(this IServiceProvider services)
         {
             services
-                .AddRoles();
+                .AddSeed();
             return services;
         }
 
-        private static IServiceProvider AddRoles(this IServiceProvider services)
+        private static IServiceProvider AddSeed(this IServiceProvider services)
         {
             using (var scope = services.CreateScope())
             {
@@ -120,11 +120,16 @@ namespace BusinessLogicLayer
                 {
                     if (!context.Roles.Any())
                     {
+                        var admin = new Role { Id = Guid.NewGuid(), Name = RoleConstants.Admin };
                         context.Roles.AddRange(
-                            new Role { Id = Guid.NewGuid(), Name = RoleConstants.Admin },
+                            admin,
                             new Role { Id = Guid.NewGuid(), Name = RoleConstants.User }
                         );
 
+                        var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+                        context.Users.Add(
+                            new User { Id = Guid.NewGuid(), UserName = "Admin", HashedPassword = passwordHasher.HashPassword("Pa55w0rd!"), Role = admin, RoleId = admin.Id }
+                        );
                         context.SaveChanges();
                     }
                 }

@@ -9,5 +9,6 @@ namespace BusinessLogicLayer.Services.Interfaces
         Task<UserReadDto> CreateUserAsync(UserCreateDto UserCreateDto, CancellationToken cancellationToken = default);
         Task<UserReadDto> UpdateUserAsync(UserUpdateDto UserUpdateDto, CancellationToken cancellationToken = default);
         Task<UserReadDto> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<AuthenticationResponseDto> AuthenticateAsync(UserLoginDto loginDto, CancellationToken cancellationToken = default);
     }
 }

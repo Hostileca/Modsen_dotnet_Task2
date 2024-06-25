@@ -56,5 +56,12 @@ namespace PresentationLayer.Controllers
             var deletedUser = await _userService.DeleteUserByIdAsync(id, cancellationToken);
             return Ok(deletedUser);
         }
+
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate(UserLoginDto loginDto, CancellationToken cancellationToken = default)
+        {
+            var tokenResponse = await _userService.AuthenticateAsync(loginDto, cancellationToken);
+            return Ok(tokenResponse);
+        }
     }
 }
