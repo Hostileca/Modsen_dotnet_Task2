@@ -11,14 +11,12 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class ProductService : IProductService
     {
-        private readonly IProductRepository _productRepository;
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper)
+        public ProductService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -27,41 +25,51 @@ namespace BusinessLogicLayer.Services.Implementations
             if (productCreateDto == null)
                 throw new ArgumentNullException(nameof(productCreateDto));
 
+            var productRepository = _unitOfWork.GetRepository<Product>();
+            var categoryRepository = _unitOfWork.GetRepository<Category>();
+
             var product = _mapper.Map<Product>(productCreateDto);
 
-            var existingCategory = await _categoryRepository.GetByIdAsync(productCreateDto.CategoryId);
+            var existingCategory = await categoryRepository.GetByIdAsync(productCreateDto.CategoryId);
             if (existingCategory == null)
                 throw new NotFoundException($"Category not found with id: {productCreateDto.CategoryId}");
 
             product.Category = existingCategory;
 
-            await _productRepository.AddAsync(product);
-            await _productRepository.SaveChangesAsync();
+            await productRepository.AddAsync(product);
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<ProductDetailedReadDto>(product);
         }
 
         public async Task<ProductDetailedReadDto> DeleteProductByIdAsync(Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var productRepository = _unitOfWork.GetRepository<Product>();
+
+            var product = await productRepository.GetByIdAsync(id);
             if (product == null)
                 throw new NotFoundException($"Product not found with id: {id}");
 
-            _productRepository.Delete(product);
-            await _productRepository.SaveChangesAsync();
+            productRepository.Delete(product);
+            await _unitOfWork.SaveChangesAsync();
             return _mapper.Map<ProductDetailedReadDto>(product);
         }
 
         public async Task<IEnumerable<ProductReadDto>> GetAllProductsAsync()
         {
-            var products = await _productRepository.GetAllAsync();
+            var productRepository = _unitOfWork.GetRepository<Product>();
+
+            var products = await productRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }
 
         public async Task<ProductDetailedReadDto> GetProductByIdAsync(Guid id)
         {
-            var product = await _productRepository.GetByIdAsync(id);
+            var productRepository = _unitOfWork.GetRepository<Product>();
+
+            var product = await productRepository.GetByIdAsync(id);
             if (product == null)
                 throw new NotFoundException($"Product not found with id: {id}");
+
             return _mapper.Map<ProductDetailedReadDto>(product);
         }
 
@@ -70,23 +78,28 @@ namespace BusinessLogicLayer.Services.Implementations
             if (productUpdateDto == null)
                 throw new ArgumentNullException(nameof(productUpdateDto));
 
-            var existingProduct = await _productRepository.GetByIdAsync(productUpdateDto.Id);
+            var productRepository = _unitOfWork.GetRepository<Product>();
+            var categoryRepository = _unitOfWork.GetRepository<Category>();
+
+            var existingProduct = await productRepository.GetByIdAsync(productUpdateDto.Id);
             if (existingProduct == null)
                 throw new NotFoundException($"Product not found with id: {productUpdateDto.Id}");
 
-            var existingCategory = await _categoryRepository.GetByIdAsync(productUpdateDto.CategoryId);
+            var existingCategory = await categoryRepository.GetByIdAsync(productUpdateDto.CategoryId);
             if (existingCategory == null)
                 throw new NotFoundException($"Category not found with id: {productUpdateDto.CategoryId}");
 
             existingProduct.Category = existingCategory;
 
-            var newProduct = _mapper.Map(productUpdateDto, existingProduct);
-            await _productRepository.SaveChangesAsync();
-            return _mapper.Map<ProductDetailedReadDto>(newProduct);
+            var updatedProduct = _mapper.Map(productUpdateDto, existingProduct);
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<ProductDetailedReadDto>(updatedProduct);
         }
 
         public async Task<IEnumerable<ProductReadDto>> GetProductsByFilter(ProductQuery productQuery)
         {
+            var productRepository = _unitOfWork.GetRepository<Product>();
+
             Expression<Func<Product, bool>> predicate = product => true;
 
             if (!string.IsNullOrEmpty(productQuery.Name))
@@ -104,7 +117,7 @@ namespace BusinessLogicLayer.Services.Implementations
                 predicate = predicate.And(product => product.Price < productQuery.MaxPrice);
             }
 
-            if (productQuery.MinPrice < 0)
+            if (productQuery.MinPrice > 0)
             {
                 predicate = predicate.And(product => product.Price > productQuery.MinPrice);
             }
@@ -114,7 +127,7 @@ namespace BusinessLogicLayer.Services.Implementations
                 predicate = predicate.And(product => product.CategoryId == productQuery.CategoryId);
             }
 
-            var products = await _productRepository.GetByPredicateAsync(predicate);
+            var products = await productRepository.GetByPredicateAsync(predicate);
 
             return _mapper.Map<IEnumerable<ProductReadDto>>(products);
         }

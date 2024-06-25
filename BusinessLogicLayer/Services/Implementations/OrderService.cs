@@ -9,12 +9,12 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class OrderService : IOrderService
     {
-        private readonly IOrderRepository _orderRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IMapper mapper)
+        public OrderService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -23,35 +23,43 @@ namespace BusinessLogicLayer.Services.Implementations
             if (orderCreateDto == null)
                 throw new ArgumentNullException(nameof(orderCreateDto));
 
+            var orderRepository = _unitOfWork.GetRepository<Order>();
+
             var order = _mapper.Map<Order>(orderCreateDto);
 
-            await _orderRepository.AddAsync(order);
-            await _orderRepository.SaveChangesAsync();
+            await orderRepository.AddAsync(order);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<OrderReadDto>(order);
         }
 
         public async Task<OrderReadDto> DeleteOrderByIdAsync(Guid id)
         {
-            var order = await _orderRepository.GetByIdAsync(id);
+            var orderRepository = _unitOfWork.GetRepository<Order>();
+
+            var order = await orderRepository.GetByIdAsync(id);
             if (order == null)
                 throw new NotFoundException($"Order not found with id: {id}");
 
-            _orderRepository.Delete(order);
-            await _orderRepository.SaveChangesAsync();
+            orderRepository.Delete(order);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<OrderReadDto>(order);
         }
 
         public async Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync()
         {
-            var orders = await _orderRepository.GetAllAsync();
+            var orderRepository = _unitOfWork.GetRepository<Order>();
+
+            var orders = await orderRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<OrderReadDto>>(orders);
         }
 
         public async Task<OrderReadDto> GetOrderByIdAsync(Guid id)
         {
-            var order = await _orderRepository.GetByIdAsync(id);
+            var orderRepository = _unitOfWork.GetRepository<Order>();
+
+            var order = await orderRepository.GetByIdAsync(id);
             if (order == null)
                 throw new NotFoundException($"Order not found with id: {id}");
 

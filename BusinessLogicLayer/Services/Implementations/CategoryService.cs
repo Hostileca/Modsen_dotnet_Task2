@@ -9,12 +9,12 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class CategoryService : ICategoryService
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
+        public CategoryService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
@@ -23,34 +23,38 @@ namespace BusinessLogicLayer.Services.Implementations
             if (categoryCreateDto == null)
                 throw new ArgumentNullException(nameof(categoryCreateDto));
 
+            var categoryRepository = _unitOfWork.GetRepository<Category>();
             var category = _mapper.Map<Category>(categoryCreateDto);
-            await _categoryRepository.AddAsync(category);
-            await _categoryRepository.SaveChangesAsync();
+            await categoryRepository.AddAsync(category);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
         public async Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            var categoryRepository = _unitOfWork.GetRepository<Category>();
+            var category = await categoryRepository.GetByIdAsync(id);
             if (category == null)
                 throw new NotFoundException($"Category not found with id: {id}");
 
-            _categoryRepository.Delete(category);
-            await _categoryRepository.SaveChangesAsync();
+            categoryRepository.Delete(category);
+            await _unitOfWork.SaveChangesAsync();
 
             return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
         public async Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync()
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            var categoryRepository = _unitOfWork.GetRepository<Category>();
+            var categories = await categoryRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<CategoryReadDto>>(categories);
         }
 
         public async Task<CategoryDetailedReadDto> GetCategoryByIdAsync(Guid id)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            var categoryRepository = _unitOfWork.GetRepository<Category>();
+            var category = await categoryRepository.GetByIdAsync(id);
             if (category == null)
                 throw new NotFoundException($"Category not found with id: {id}");
 
@@ -62,13 +66,15 @@ namespace BusinessLogicLayer.Services.Implementations
             if (categoryUpdateDto == null)
                 throw new ArgumentNullException(nameof(categoryUpdateDto));
 
-            var existingCategory = await _categoryRepository.GetByIdAsync(categoryUpdateDto.Id);
+            var categoryRepository = _unitOfWork.GetRepository<Category>();
+            var existingCategory = await categoryRepository.GetByIdAsync(categoryUpdateDto.Id);
             if (existingCategory == null)
                 throw new NotFoundException($"Category not found with id: {categoryUpdateDto.Id}");
 
-            var newCategory = _mapper.Map(categoryUpdateDto, existingCategory);
-            await _categoryRepository.SaveChangesAsync();
-            return _mapper.Map<CategoryDetailedReadDto>(newCategory);
+            var updatedCategory = _mapper.Map(categoryUpdateDto, existingCategory);
+            await _unitOfWork.SaveChangesAsync();
+
+            return _mapper.Map<CategoryDetailedReadDto>(updatedCategory);
         }
     }
 }
