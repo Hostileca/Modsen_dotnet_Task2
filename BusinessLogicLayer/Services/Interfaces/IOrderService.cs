@@ -4,9 +4,9 @@ namespace BusinessLogicLayer.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync();
-        Task<OrderReadDto> GetOrderByIdAsync(Guid id);
-        Task<OrderReadDto> CreateOrderAsync(OrderCreateDto OrderCreateDto);
-        Task<OrderReadDto> DeleteOrderByIdAsync(Guid id);
+        Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync(CancellationToken cancellationToken = default);
+        Task<OrderReadDto> GetOrderByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<OrderReadDto> CreateOrderAsync(OrderCreateDto OrderCreateDto, CancellationToken cancellationToken = default);
+        Task<OrderReadDto> DeleteOrderByIdAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

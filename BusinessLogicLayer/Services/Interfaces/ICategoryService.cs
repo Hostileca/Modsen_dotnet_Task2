@@ -4,10 +4,10 @@ namespace BusinessLogicLayer.Services.Interfaces
 {
     public interface ICategoryService
     {
-        Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync();
-        Task<CategoryDetailedReadDto> GetCategoryByIdAsync(Guid id);
-        Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto);
-        Task<CategoryDetailedReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto);
-        Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id);
+        Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync(CancellationToken cancellationToken = default);
+        Task<CategoryDetailedReadDto> GetCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto, CancellationToken cancellationToken = default);
+        Task<CategoryDetailedReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto, CancellationToken cancellationToken = default);
+        Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

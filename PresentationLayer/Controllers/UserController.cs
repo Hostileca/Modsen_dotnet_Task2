@@ -16,28 +16,28 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers()
+        public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken = default)
         {
             var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserById(Guid id)
+        public async Task<IActionResult> GetUserById(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _userService.GetUserByIdAsync(id);
             return Ok(user);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateUser(UserCreateDto userCreateDto)
+        public async Task<IActionResult> CreateUser(UserCreateDto userCreateDto, CancellationToken cancellationToken = default)
         {
             var user = await _userService.CreateUserAsync(userCreateDto);
             return Ok(user);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(Guid id, UserUpdateDto userUpdateDto)
+        public async Task<IActionResult> UpdateUser(Guid id, UserUpdateDto userUpdateDto, CancellationToken cancellationToken = default)
         {
             userUpdateDto.Id = id;
             var user = await _userService.UpdateUserAsync(userUpdateDto);
@@ -45,7 +45,7 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(Guid id)
+        public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken = default)
         {
             var deletedUser = await _userService.DeleteUserByIdAsync(id);
             return Ok(deletedUser);

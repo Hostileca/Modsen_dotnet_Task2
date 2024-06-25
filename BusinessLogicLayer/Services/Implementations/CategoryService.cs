@@ -18,56 +18,68 @@ namespace BusinessLogicLayer.Services.Implementations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto)
+        public async Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto, CancellationToken cancellationToken = default)
         {
             if (categoryCreateDto == null)
+            {
                 throw new ArgumentNullException(nameof(categoryCreateDto));
+            }
 
             var category = _mapper.Map<Category>(categoryCreateDto);
-            await _categoryRepository.AddAsync(category);
-            await _categoryRepository.SaveChangesAsync();
+
+            await _categoryRepository.AddAsync(category, cancellationToken);
+            await _categoryRepository.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
-        public async Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id)
+        public async Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
+
             if (category == null)
+            {
                 throw new NotFoundException($"Category not found with id: {id}");
+            }
 
             _categoryRepository.Delete(category);
-            await _categoryRepository.SaveChangesAsync();
+            await _categoryRepository.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
-        public async Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync()
+        public async Task<IEnumerable<CategoryReadDto>> GetAllCategoriesAsync(CancellationToken cancellationToken = default)
         {
-            var categories = await _categoryRepository.GetAllAsync();
+            var categories = await _categoryRepository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<CategoryReadDto>>(categories);
         }
 
-        public async Task<CategoryDetailedReadDto> GetCategoryByIdAsync(Guid id)
+        public async Task<CategoryDetailedReadDto> GetCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var category = await _categoryRepository.GetByIdAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id, cancellationToken);
             if (category == null)
+            {
                 throw new NotFoundException($"Category not found with id: {id}");
+            }
 
             return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
-        public async Task<CategoryDetailedReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto)
+        public async Task<CategoryDetailedReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto, CancellationToken cancellationToken = default)
         {
             if (categoryUpdateDto == null)
+            {
                 throw new ArgumentNullException(nameof(categoryUpdateDto));
+            }
 
-            var existingCategory = await _categoryRepository.GetByIdAsync(categoryUpdateDto.Id);
+            var existingCategory = await _categoryRepository.GetByIdAsync(categoryUpdateDto.Id, cancellationToken);
             if (existingCategory == null)
+            {
                 throw new NotFoundException($"Category not found with id: {categoryUpdateDto.Id}");
+            }
 
             var newCategory = _mapper.Map(categoryUpdateDto, existingCategory);
-            await _categoryRepository.SaveChangesAsync();
+            await _categoryRepository.SaveChangesAsync(cancellationToken);
             return _mapper.Map<CategoryDetailedReadDto>(newCategory);
         }
     }

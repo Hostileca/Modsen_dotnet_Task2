@@ -18,23 +18,25 @@ namespace BusinessLogicLayer.Services.Implementations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<IEnumerable<RoleReadDto>> GetAllRolesAsync()
+        public async Task<IEnumerable<RoleReadDto>> GetAllRolesAsync(CancellationToken cancellationToken = default)
         {
-            var roles = await _roleRepository.GetAllAsync();
+            var roles = await _roleRepository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<RoleReadDto>>(roles);
         }
 
-        public async Task<RoleReadDto> GetRoleByIdAsync(Guid id)
+        public async Task<RoleReadDto> GetRoleByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var role = await _roleRepository.GetByIdAsync(id);
+            var role = await _roleRepository.GetByIdAsync(id, cancellationToken);
             if (role == null)
+            {
                 throw new NotFoundException($"Role not found with id: {id}");
+            }
             return _mapper.Map<RoleReadDto>(role);
         }
 
-        public async Task<IEnumerable<UserReadDto>> GetUsersWithRole(string role)
+        public async Task<IEnumerable<UserReadDto>> GetUsersWithRole(string role, CancellationToken cancellationToken = default)
         {
-            var founded_role = (await _roleRepository.GetByPredicateAsync(r => r.Name == role)).First();
+            var founded_role = (await _roleRepository.GetByPredicateAsync(r => r.Name == role, cancellationToken)).First();
             if (founded_role == null)
             {
                 throw new NotFoundException($"Role with name {role} not found");

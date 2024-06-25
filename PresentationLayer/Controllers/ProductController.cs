@@ -16,35 +16,35 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetAllProducts(CancellationToken cancellationToken = default)
         {
             var products = await _productService.GetAllProductsAsync();
             return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetProductById(Guid id)
+        public async Task<IActionResult> GetProductById(Guid id, CancellationToken cancellationToken = default)
         {
             var product = await _productService.GetProductByIdAsync(id);
             return Ok(product);
         }
 
         [HttpGet("query")]
-        public async Task<IActionResult> GetProductsByQuery([FromQuery]ProductQuery filter)
+        public async Task<IActionResult> GetProductsByQuery([FromQuery]ProductQuery filter, CancellationToken cancellationToken = default)
         {
             var products = await _productService.GetProductsByFilter(filter);
             return Ok(products);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct(ProductCreateDto productCreateDto)
+        public async Task<IActionResult> CreateProduct(ProductCreateDto productCreateDto, CancellationToken cancellationToken = default)
         {
             var product = await _productService.CreateProductAsync(productCreateDto);
             return Ok(product);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, ProductUpdateDto productUpdateDto)
+        public async Task<IActionResult> UpdateProduct(Guid id, ProductUpdateDto productUpdateDto, CancellationToken cancellationToken = default)
         {
             productUpdateDto.Id = id;
             var product = await _productService.UpdateProductAsync(productUpdateDto);
@@ -52,7 +52,7 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
+        public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken = default)
         {
             var deletedProduct = await _productService.DeleteProductByIdAsync(id);
             return Ok(deletedProduct);

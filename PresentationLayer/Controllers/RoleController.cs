@@ -11,20 +11,20 @@ namespace PresentationLayer.Controllers
     {
         private readonly IRoleService _roleService;
 
-        public RoleController(IRoleService roleService)
+        public RoleController(IRoleService roleService, CancellationToken cancellationToken = default)
         {
             _roleService = roleService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRoles()
+        public async Task<IActionResult> GetAllRoles(CancellationToken cancellationToken = default)
         {
             var roles = await _roleService.GetAllRolesAsync();
             return Ok(roles);
         }
 
-        [HttpGet("{role}/admins")]
-        public async Task<IActionResult> GetUsersWithRole(string role)
+        [HttpGet("{role}/users")]
+        public async Task<IActionResult> GetUsersWithRole(string role, CancellationToken cancellationToken = default)
         {
             var users = await _roleService.GetUsersWithRole(role);
             return Ok(users);
