@@ -17,16 +17,14 @@ namespace BusinessLogicLayer.Services.Implementations
     public class UserService : IUserService
     {
         private readonly IPasswordHasher _passwordHasher;
-        private readonly IUserRepository _userRepository;
-        private readonly IRoleRepository _roleRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IConfiguration _configuration;
 
-        public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IRoleRepository roleRepository, IMapper mapper, IConfiguration configuration)
+        public UserService(IPasswordHasher passwordHasher, IUnitOfWork unitOfWork, IMapper mapper, IConfiguration configuration)
         {
             _passwordHasher = passwordHasher;
-            _userRepository = userRepository;
-            _roleRepository = roleRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _configuration = configuration;
         }
@@ -38,7 +36,9 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new ArgumentNullException(nameof(loginDto));
             }
 
-            var existingUser = (await _userRepository.GetByPredicateAsync(user => user.UserName == loginDto.UserName, cancellationToken)).FirstOrDefault();
+            var userRepository = _unitOfWork.GetRepository<User>();
+
+            var existingUser = (await userRepository.GetByPredicateAsync(user => user.UserName == loginDto.UserName, cancellationToken)).FirstOrDefault();
             if(existingUser == null)
             {
                 throw new NotFoundException($"User not found with username {loginDto.UserName}");
@@ -64,7 +64,10 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new ArgumentNullException(nameof(userCreateDto));
             }
 
-            var existingUser = (await _userRepository.GetByPredicateAsync(user => user.UserName == userCreateDto.UserName, cancellationToken)).FirstOrDefault();
+            var userRepository = _unitOfWork.GetRepository<User>();
+            var roleRepository = _unitOfWork.GetRepository<Role>();
+
+            var existingUser = (await userRepository.GetByPredicateAsync(user => user.UserName == userCreateDto.UserName, cancellationToken)).FirstOrDefault();
             if (existingUser != null)
             {
                 throw new DuplicateNameException($"User with username {userCreateDto.UserName} already exists");
@@ -72,23 +75,25 @@ namespace BusinessLogicLayer.Services.Implementations
             var user = _mapper.Map<User>(userCreateDto);
 
             user.HashedPassword = _passwordHasher.HashPassword(userCreateDto.Password);
-            user.Role = (await _roleRepository.GetByPredicateAsync(r => r.Name == RoleConstants.User, cancellationToken)).FirstOrDefault();
+            user.Role = (await roleRepository.GetByPredicateAsync(r => r.Name == RoleConstants.User, cancellationToken)).FirstOrDefault();
 
-            await _userRepository.AddAsync(user, cancellationToken);
-            await _userRepository.SaveChangesAsync(cancellationToken);
+            await userRepository.AddAsync(user, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<UserReadDto>(user);
         }
 
         public async Task<UserReadDto> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+            var userRepository = _unitOfWork.GetRepository<User>();
+            
+            var user = await userRepository.GetByIdAsync(id, cancellationToken);
             if (user == null)
             {
                 throw new NotFoundException($"User not found with id: {id}");
             }
 
-            _userRepository.Delete(user);
-            await _userRepository.SaveChangesAsync(cancellationToken);
+            userRepository.Delete(user);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<UserReadDto>(user);
         }
 
@@ -116,13 +121,17 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetAllAsync(cancellationToken);
+            var userRepository = _unitOfWork.GetRepository<User>();
+            
+            var user = await userRepository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<UserReadDto>>(user);
         }
 
         public async Task<UserReadDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var user = await _userRepository.GetByIdAsync(id, cancellationToken);
+            var userRepository = _unitOfWork.GetRepository<User>();
+            
+            var user = await userRepository.GetByIdAsync(id, cancellationToken);
             if (user == null)
             {
                 throw new NotFoundException($"User not found with id: {id}");
@@ -137,13 +146,16 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new ArgumentNullException(nameof(userUpdateDto));
             }
 
-            var existingUser = await _userRepository.GetByIdAsync(userUpdateDto.Id, cancellationToken);
+            var userRepository = _unitOfWork.GetRepository<User>();
+            var roleRepository = _unitOfWork.GetRepository<Role>();
+
+            var existingUser = await userRepository.GetByIdAsync(userUpdateDto.Id, cancellationToken);
             if (existingUser == null)
             {
                 throw new NotFoundException($"User not found with id: {userUpdateDto.Id}");
             }
 
-            var existingRole = await _roleRepository.GetByIdAsync(userUpdateDto.RoleId, cancellationToken);
+            var existingRole = await roleRepository.GetByIdAsync(userUpdateDto.RoleId, cancellationToken);
             if (existingRole == null)
             {
                 throw new NotFoundException($"Role not found with id: {userUpdateDto.RoleId}");
@@ -152,7 +164,7 @@ namespace BusinessLogicLayer.Services.Implementations
             existingUser.HashedPassword = _passwordHasher.HashPassword(userUpdateDto.Password);
 
             var newUser = _mapper.Map(userUpdateDto, existingUser);
-            await _userRepository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<UserReadDto>(newUser);
         }
     }

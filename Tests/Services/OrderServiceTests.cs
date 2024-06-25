@@ -9,12 +9,14 @@ namespace Tests.Services
         private readonly Mock<IOrderRepository> _mockOrderRepository;
         private readonly Mock<IMapper> _mockMapper;
         private readonly IOrderService _orderService;
+        private readonly CancellationToken cancellationToken;
 
         public OrderServiceTests()
         {
             _mockOrderRepository = new Mock<IOrderRepository>();
             _mockMapper = new Mock<IMapper>();
             _orderService = new OrderService(_mockOrderRepository.Object, _mockMapper.Object);
+            cancellationToken = default;
         }
 
         [Fact]
@@ -25,8 +27,8 @@ namespace Tests.Services
             var expectedReadDto = new OrderReadDto { Id = order.Id, OrderItems = new List<OrderItemReadDto> { new OrderItemReadDto { Amount = 5, Product = new ProductReadDto { Id = Guid.NewGuid(), Name = "Test Product" } } } };
 
             _mockMapper.Setup(m => m.Map<Order>(createDto)).Returns(order);
-            _mockOrderRepository.Setup(repo => repo.AddAsync(order)).Returns(Task.CompletedTask);
-            _mockOrderRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            _mockOrderRepository.Setup(repo => repo.AddAsync(order, cancellationToken)).Returns(Task.CompletedTask);
+            _mockOrderRepository.Setup(repo => repo.SaveChangesAsync(cancellationToken)).Returns(Task.CompletedTask);
             _mockMapper.Setup(m => m.Map<OrderReadDto>(order)).Returns(expectedReadDto);
 
             var result = await _orderService.CreateOrderAsync(createDto);
@@ -43,9 +45,9 @@ namespace Tests.Services
             var order = new Order { Id = orderId, OrderItems = new List<OrderItem> { new OrderItem { Id = Guid.NewGuid(), Amount = 5, ProductId = Guid.NewGuid(), OrderId = orderId } } };
             var expectedReadDto = new OrderReadDto { Id = order.Id, OrderItems = new List<OrderItemReadDto> { new OrderItemReadDto { Amount = 5, Product = new ProductReadDto { Id = Guid.NewGuid(), Name = "Test Product" } } } };
 
-            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(order);
+            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId, cancellationToken)).ReturnsAsync(order);
             _mockOrderRepository.Setup(repo => repo.Delete(order));
-            _mockOrderRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            _mockOrderRepository.Setup(repo => repo.SaveChangesAsync(cancellationToken)).Returns(Task.CompletedTask);
             _mockMapper.Setup(m => m.Map<OrderReadDto>(order)).Returns(expectedReadDto);
 
             var result = await _orderService.DeleteOrderByIdAsync(orderId);
@@ -68,7 +70,7 @@ namespace Tests.Services
                 new OrderReadDto { Id = orders[1].Id, OrderItems = new List<OrderItemReadDto> { new OrderItemReadDto { Amount = 10, Product = new ProductReadDto { Id = Guid.NewGuid(), Name = "Product 2" } } } }
             };
 
-            _mockOrderRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(orders);
+            _mockOrderRepository.Setup(repo => repo.GetAllAsync(cancellationToken)).ReturnsAsync(orders);
             _mockMapper.Setup(m => m.Map<IEnumerable<OrderReadDto>>(orders)).Returns(expectedReadDtos);
 
             var result = await _orderService.GetAllOrdersAsync();
@@ -84,7 +86,7 @@ namespace Tests.Services
             var order = new Order { Id = orderId, OrderItems = new List<OrderItem> { new OrderItem { Id = Guid.NewGuid(), Amount = 5, ProductId = Guid.NewGuid(), OrderId = orderId } } };
             var expectedReadDto = new OrderReadDto { Id = order.Id, OrderItems = new List<OrderItemReadDto> { new OrderItemReadDto { Amount = 5, Product = new ProductReadDto { Id = Guid.NewGuid(), Name = "Test Product" } } } };
 
-            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync(order);
+            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId, cancellationToken)).ReturnsAsync(order);
             _mockMapper.Setup(m => m.Map<OrderReadDto>(order)).Returns(expectedReadDto);
 
             var result = await _orderService.GetOrderByIdAsync(orderId);
@@ -105,7 +107,7 @@ namespace Tests.Services
         public async Task DeleteOrderByIdAsync_NonExistingId_ThrowsNotFoundException()
         {
             var orderId = Guid.NewGuid();
-            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync((Order)null);
+            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId, cancellationToken)).ReturnsAsync((Order)null);
 
             Func<Task> action = async () => await _orderService.DeleteOrderByIdAsync(orderId);
 
@@ -116,7 +118,7 @@ namespace Tests.Services
         public async Task GetOrderByIdAsync_NonExistingId_ThrowsNotFoundException()
         {
             var orderId = Guid.NewGuid();
-            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId)).ReturnsAsync((Order)null);
+            _mockOrderRepository.Setup(repo => repo.GetByIdAsync(orderId, cancellationToken)).ReturnsAsync((Order)null);
 
             Func<Task> action = async () => await _orderService.GetOrderByIdAsync(orderId);
 

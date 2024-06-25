@@ -9,17 +9,12 @@ namespace BusinessLogicLayer.Services.Implementations
 {
     public class OrderItemService : IOrderItemService
     {
-        private readonly IOrderItemRepository _orderItemRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IOrderRepository _orderRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository,
-            IOrderRepository orderRepository, IMapper mapper)
+        public OrderItemService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _orderItemRepository = orderItemRepository;
-            _productRepository = productRepository;
-            _orderRepository = orderRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -30,15 +25,19 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new ArgumentNullException(nameof(orderItemCreateDto));
             }
 
+            var orderItemRepository = _unitOfWork.GetRepository<OrderItem>();
+            var productRepository = _unitOfWork.GetRepository<Product>();
+            var orderRepository = _unitOfWork.GetRepository<Order>();
+
             var orderItem = _mapper.Map<OrderItem>(orderItemCreateDto);
 
-            var existingProduct = await _productRepository.GetByIdAsync(orderItemCreateDto.ProductId, cancellationToken);
+            var existingProduct = await productRepository.GetByIdAsync(orderItemCreateDto.ProductId, cancellationToken);
             if (existingProduct == null)
             {
                 throw new NotFoundException($"Product not found with id: {orderItemCreateDto.ProductId}");
             }
 
-            var existingOrder = await _orderRepository.GetByIdAsync(orderItemCreateDto.OrderId, cancellationToken);
+            var existingOrder = await orderRepository.GetByIdAsync(orderItemCreateDto.OrderId, cancellationToken);
             if (existingOrder == null)
             {
                 throw new NotFoundException($"Order not found with id: {orderItemCreateDto.OrderId}");
@@ -47,35 +46,41 @@ namespace BusinessLogicLayer.Services.Implementations
             orderItem.Product = existingProduct;
             orderItem.Order = existingOrder;
 
-            await _orderItemRepository.AddAsync(orderItem, cancellationToken);
-            await _orderItemRepository.SaveChangesAsync(cancellationToken);
+            await orderItemRepository.AddAsync(orderItem, cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<OrderItemReadDto>(orderItem);
         }
 
         public async Task<OrderItemReadDto> DeleteOrderItemByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var orderItem = await _orderItemRepository.GetByIdAsync(id, cancellationToken);
+            var orderItemRepository = _unitOfWork.GetRepository<OrderItem>();
+
+            var orderItem = await orderItemRepository.GetByIdAsync(id, cancellationToken);
             if (orderItem == null)
             {
                 throw new NotFoundException($"Order item not found with id: {id}");
             }
 
-            _orderItemRepository.Delete(orderItem);
-            await _orderItemRepository.SaveChangesAsync(cancellationToken);
+            orderItemRepository.Delete(orderItem);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<OrderItemReadDto>(orderItem);
         }
 
         public async Task<IEnumerable<OrderItemReadDto>> GetAllOrderItemsAsync(CancellationToken cancellationToken = default)
         {
-            var orderItems = await _orderItemRepository.GetAllAsync(cancellationToken);
+            var orderItemRepository = _unitOfWork.GetRepository<OrderItem>();
+
+            var orderItems = await orderItemRepository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<OrderItemReadDto>>(orderItems);
         }
 
         public async Task<OrderItemReadDto> GetOrderItemByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var orderItem = await _orderItemRepository.GetByIdAsync(id, cancellationToken);
+            var orderItemRepository = _unitOfWork.GetRepository<OrderItem>();
+
+            var orderItem = await orderItemRepository.GetByIdAsync(id, cancellationToken);
             if (orderItem == null)
             {
                 throw new KeyNotFoundException($"Order item not found with id: {id}");
@@ -91,14 +96,16 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new ArgumentNullException(nameof(orderItemUpdateDto));
             }
 
-            var existingOrderItem = await _orderItemRepository.GetByIdAsync(orderItemUpdateDto.Id, cancellationToken);
+            var orderItemRepository = _unitOfWork.GetRepository<OrderItem>();
+
+            var existingOrderItem = await orderItemRepository.GetByIdAsync(orderItemUpdateDto.Id, cancellationToken);
             if (existingOrderItem == null)
             {
                 throw new KeyNotFoundException($"Order item not found with id: {orderItemUpdateDto.Id}");
             }
 
             var newOrderItem = _mapper.Map(orderItemUpdateDto, existingOrderItem);
-            await _orderItemRepository.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
             return _mapper.Map<OrderItemReadDto>(newOrderItem);
         }
     }

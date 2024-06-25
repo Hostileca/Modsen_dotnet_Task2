@@ -6,17 +6,17 @@ namespace Tests.Services
 {
     public class ProductServiceTests
     {
-        private readonly Mock<IProductRepository> _mockProductRepository;
-        private readonly Mock<ICategoryRepository> _mockCategoryRepository;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IMapper> _mockMapper;
         private readonly IProductService _productService;
+        private readonly CancellationToken cancellationToken;
 
         public ProductServiceTests()
         {
-            _mockProductRepository = new Mock<IProductRepository>();
-            _mockCategoryRepository = new Mock<ICategoryRepository>();
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _productService = new ProductService(_mockProductRepository.Object, _mockCategoryRepository.Object, _mockMapper.Object);
+            _productService = new ProductService(_mockUnitOfWork.Object, _mockMapper.Object);
+            cancellationToken = default;
         }
 
         [Fact]
@@ -26,10 +26,16 @@ namespace Tests.Services
             var product = new Product { Id = Guid.NewGuid(), Name = createDto.Name, Description = createDto.Description, Price = createDto.Price, CategoryId = createDto.CategoryId };
             var expectedReadDto = new ProductDetailedReadDto { Id = product.Id, Name = product.Name, Description = product.Description, Price = product.Price, Category = new CategoryReadDto { Id = createDto.CategoryId, Name = "Test Category" } };
 
+            var mockProductRepository = new Mock<IRepository<Product>>();
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+
             _mockMapper.Setup(m => m.Map<Product>(createDto)).Returns(product);
-            _mockCategoryRepository.Setup(repo => repo.GetByIdAsync(createDto.CategoryId)).ReturnsAsync(new Category { Id = createDto.CategoryId, Name = "Test Category" });
-            _mockProductRepository.Setup(repo => repo.AddAsync(product)).Returns(Task.CompletedTask);
-            _mockProductRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            mockCategoryRepository.Setup(repo => repo.GetByIdAsync(createDto.CategoryId, cancellationToken)).ReturnsAsync(new Category { Id = createDto.CategoryId, Name = "Test Category" });
+            mockProductRepository.Setup(repo => repo.AddAsync(product, cancellationToken)).Returns(Task.CompletedTask);
+            _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync(cancellationToken)).ReturnsAsync(0);
             _mockMapper.Setup(m => m.Map<ProductDetailedReadDto>(product)).Returns(expectedReadDto);
 
             var result = await _productService.CreateProductAsync(createDto);
@@ -48,9 +54,13 @@ namespace Tests.Services
             var product = new Product { Id = productId, Name = "Test Product", Description = "Test Description", Price = 10.5f, CategoryId = Guid.NewGuid() };
             var expectedReadDto = new ProductDetailedReadDto { Id = product.Id, Name = product.Name, Description = product.Description, Price = product.Price, Category = new CategoryReadDto { Id = product.CategoryId, Name = "Test Category" } };
 
-            _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
-            _mockProductRepository.Setup(repo => repo.Delete(product));
-            _mockProductRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            var mockProductRepository = new Mock<IRepository<Product>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+
+            mockProductRepository.Setup(repo => repo.GetByIdAsync(productId, cancellationToken)).ReturnsAsync(product);
+            mockProductRepository.Setup(repo => repo.Delete(product));
+            _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync(cancellationToken)).ReturnsAsync(0);
             _mockMapper.Setup(m => m.Map<ProductDetailedReadDto>(product)).Returns(expectedReadDto);
 
             var result = await _productService.DeleteProductByIdAsync(productId);
@@ -74,7 +84,11 @@ namespace Tests.Services
                 new ProductReadDto { Id = products[1].Id, Name = products[1].Name, Price = products[1].Price }
             };
 
-            _mockProductRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(products);
+            var mockProductRepository = new Mock<IRepository<Product>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+
+            mockProductRepository.Setup(repo => repo.GetAllAsync(cancellationToken)).ReturnsAsync(products);
             _mockMapper.Setup(m => m.Map<IEnumerable<ProductReadDto>>(products)).Returns(expectedReadDtos);
 
             var result = await _productService.GetAllProductsAsync();
@@ -91,7 +105,11 @@ namespace Tests.Services
             var product = new Product { Id = productId, Name = "Test Product", Description = "Test Description", Price = 10.5f, CategoryId = Guid.NewGuid() };
             var expectedReadDto = new ProductDetailedReadDto { Id = product.Id, Name = product.Name, Description = product.Description, Price = product.Price, Category = new CategoryReadDto { Id = product.CategoryId, Name = "Test Category" } };
 
-            _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
+            var mockProductRepository = new Mock<IRepository<Product>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+
+            mockProductRepository.Setup(repo => repo.GetByIdAsync(productId, cancellationToken)).ReturnsAsync(product);
             _mockMapper.Setup(m => m.Map<ProductDetailedReadDto>(product)).Returns(expectedReadDto);
 
             var result = await _productService.GetProductByIdAsync(productId);
@@ -110,10 +128,16 @@ namespace Tests.Services
             var updatedProduct = new Product { Id = productId, Name = updatedDto.Name, Description = updatedDto.Description, Price = updatedDto.Price, CategoryId = updatedDto.CategoryId };
             var expectedReadDto = new ProductDetailedReadDto { Id = updatedProduct.Id, Name = updatedProduct.Name, Description = updatedProduct.Description, Price = updatedProduct.Price, Category = new CategoryReadDto { Id = updatedDto.CategoryId, Name = "Updated Category" } };
 
-            _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(existingProduct);
-            _mockCategoryRepository.Setup(repo => repo.GetByIdAsync(updatedDto.CategoryId)).ReturnsAsync(new Category { Id = updatedDto.CategoryId, Name = "Updated Category" });
+            var mockProductRepository = new Mock<IRepository<Product>>();
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+
+            mockProductRepository.Setup(repo => repo.GetByIdAsync(productId, cancellationToken)).ReturnsAsync(existingProduct);
+            mockCategoryRepository.Setup(repo => repo.GetByIdAsync(updatedDto.CategoryId, cancellationToken)).ReturnsAsync(new Category { Id = updatedDto.CategoryId, Name = "Updated Category" });
             _mockMapper.Setup(m => m.Map(updatedDto, existingProduct)).Returns(updatedProduct);
-            _mockProductRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync(cancellationToken)).ReturnsAsync(0);
             _mockMapper.Setup(m => m.Map<ProductDetailedReadDto>(updatedProduct)).Returns(expectedReadDto);
 
             var result = await _productService.UpdateProductAsync(updatedDto);
@@ -135,7 +159,11 @@ namespace Tests.Services
         public async Task DeleteProductByIdAsync_NonExistingId_ThrowsNotFoundException()
         {
             var productId = Guid.NewGuid();
-            _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync((Product)null);
+            var mockProductRepository = new Mock<IRepository<Product>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+
+            mockProductRepository.Setup(repo => repo.GetByIdAsync(productId, cancellationToken)).ReturnsAsync((Product)null);
 
             Func<Task> action = async () => await _productService.DeleteProductByIdAsync(productId);
 
@@ -146,7 +174,11 @@ namespace Tests.Services
         public async Task GetProductByIdAsync_NonExistingId_ThrowsNotFoundException()
         {
             var productId = Guid.NewGuid();
-            _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync((Product)null);
+            var mockProductRepository = new Mock<IRepository<Product>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+
+            mockProductRepository.Setup(repo => repo.GetByIdAsync(productId, cancellationToken)).ReturnsAsync((Product)null);
 
             Func<Task> action = async () => await _productService.GetProductByIdAsync(productId);
 
@@ -179,7 +211,11 @@ namespace Tests.Services
                 new Product { Id = Guid.NewGuid(), Name = "Product 2", Description = "Description 2", Price = 80, CategoryId = productQuery.CategoryId }
             };
 
-            _mockProductRepository.Setup(repo => repo.GetByPredicateAsync(It.IsAny<Expression<Func<Product, bool>>>()))
+            var mockProductRepository = new Mock<IRepository<Product>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Product>()).Returns(mockProductRepository.Object);
+
+            mockProductRepository.Setup(repo => repo.GetByPredicateAsync(It.IsAny<Expression<Func<Product, bool>>>(), cancellationToken))
                 .ReturnsAsync(filteredProducts);
 
             var expectedFilteredDtos = new List<ProductReadDto>

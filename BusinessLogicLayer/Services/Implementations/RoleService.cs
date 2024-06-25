@@ -26,20 +26,20 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public async Task<RoleReadDto> GetRoleByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var role = await _roleRepository.GetByIdAsync(id, cancellationToken);
-            if (role == null)
+            var roleName = await _roleRepository.GetByIdAsync(id, cancellationToken);
+            if (roleName == null)
             {
                 throw new NotFoundException($"Role not found with id: {id}");
             }
-            return _mapper.Map<RoleReadDto>(role);
+            return _mapper.Map<RoleReadDto>(roleName);
         }
 
-        public async Task<IEnumerable<UserReadDto>> GetUsersWithRole(string roleName, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<UserReadDto>> GetUsersWithRole(string role, CancellationToken cancellationToken = default)
         {
-            var founded_role = (await _roleRepository.GetByPredicateAsync(r => r.Name == roleName, cancellationToken)).FirstOrDefault();
+            var founded_role = (await _roleRepository.GetByPredicateAsync(r => r.Name == role, cancellationToken)).FirstOrDefault();
             if (founded_role == null)
             {
-                throw new NotFoundException($"Role with name {roleName} not found");
+                throw new NotFoundException($"Role with name {role} not found");
             }
             return _mapper.Map<IEnumerable<UserReadDto>>(founded_role.Users);
         }
