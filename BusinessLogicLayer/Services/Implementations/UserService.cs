@@ -24,10 +24,10 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IRoleRepository roleRepository, IMapper mapper, IConfiguration configuration)
         {
-            _passwordHasher = passwordHasher ?? throw new ArgumentNullException(nameof(passwordHasher));
-            _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _passwordHasher = passwordHasher;
+            _userRepository = userRepository;
+            _roleRepository = roleRepository;
+            _mapper = mapper;
             _configuration = configuration;
         }
 

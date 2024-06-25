@@ -14,8 +14,8 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public RoleService(IRoleRepository roleRepository, IMapper mapper)
         {
-            _roleRepository = roleRepository ?? throw new ArgumentNullException(nameof(roleRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _roleRepository = roleRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<RoleReadDto>> GetAllRolesAsync(CancellationToken cancellationToken = default)

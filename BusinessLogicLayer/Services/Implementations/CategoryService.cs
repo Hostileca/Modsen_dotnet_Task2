@@ -14,8 +14,8 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
         {
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
         public async Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto, CancellationToken cancellationToken = default)
