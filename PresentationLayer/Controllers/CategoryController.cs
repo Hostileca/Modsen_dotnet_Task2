@@ -1,5 +1,7 @@
-﻿using BusinessLogicLayer.Dtos.Categories;
+﻿using BusinessLogicLayer;
+using BusinessLogicLayer.Dtos.Categories;
 using BusinessLogicLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -29,6 +31,7 @@ namespace PresentationLayer.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpPost]
         public async Task<IActionResult> CreateCategory(CategoryCreateDto categoryCreateDto, CancellationToken cancellationToken = default)
         {
@@ -36,6 +39,7 @@ namespace PresentationLayer.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(Guid id, CategoryUpdateDto categoryUpdateDto, CancellationToken cancellationToken = default)
         {
@@ -44,6 +48,7 @@ namespace PresentationLayer.Controllers
             return Ok(category);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(Guid id, CancellationToken cancellationToken = default)
         {

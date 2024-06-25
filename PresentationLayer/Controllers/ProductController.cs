@@ -1,5 +1,7 @@
-﻿using BusinessLogicLayer.Dtos.Products;
+﻿using BusinessLogicLayer;
+using BusinessLogicLayer.Dtos.Products;
 using BusinessLogicLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -36,6 +38,7 @@ namespace PresentationLayer.Controllers
             return Ok(products);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpPost]
         public async Task<IActionResult> CreateProduct(ProductCreateDto productCreateDto, CancellationToken cancellationToken = default)
         {
@@ -43,6 +46,7 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, ProductUpdateDto productUpdateDto, CancellationToken cancellationToken = default)
         {
@@ -51,6 +55,7 @@ namespace PresentationLayer.Controllers
             return Ok(product);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id, CancellationToken cancellationToken = default)
         {

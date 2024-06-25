@@ -1,6 +1,6 @@
 ﻿using BusinessLogicLayer;
-using BusinessLogicLayer.Services.Implementations;
 using BusinessLogicLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -16,6 +16,7 @@ namespace PresentationLayer.Controllers
             _roleService = roleService;
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet]
         public async Task<IActionResult> GetAllRoles(CancellationToken cancellationToken = default)
         {
@@ -23,6 +24,7 @@ namespace PresentationLayer.Controllers
             return Ok(roles);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet("{role}/users")]
         public async Task<IActionResult> GetUsersWithRole(string role, CancellationToken cancellationToken = default)
         {
