@@ -5,15 +5,15 @@ namespace Tests.Services
 {
     public class RoleServiceTests
     {
-        private readonly Mock<IRoleRepository> _mockRoleRepository;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IMapper> _mockMapper;
         private readonly IRoleService _roleService;
 
         public RoleServiceTests()
         {
-            _mockRoleRepository = new Mock<IRoleRepository>();
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _roleService = new RoleService(_mockRoleRepository.Object, _mockMapper.Object);
+            _roleService = new RoleService(_mockUnitOfWork.Object, _mockMapper.Object);
         }
 
         [Fact]
@@ -30,7 +30,9 @@ namespace Tests.Services
                 new RoleReadDto { Id = roles[1].Id, Name = roles[1].Name }
             };
 
-            _mockRoleRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(roles);
+            var mockRoleRepository = new Mock<IRepository<Role>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Role>()).Returns(mockRoleRepository.Object);
+            mockRoleRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(roles);
             _mockMapper.Setup(m => m.Map<IEnumerable<RoleReadDto>>(roles)).Returns(expectedReadDtos);
 
             var result = await _roleService.GetAllRolesAsync();
@@ -47,7 +49,9 @@ namespace Tests.Services
             var role = new Role { Id = roleId, Name = "Admin" };
             var expectedReadDto = new RoleReadDto { Id = role.Id, Name = role.Name };
 
-            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync(role);
+            var mockRoleRepository = new Mock<IRepository<Role>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Role>()).Returns(mockRoleRepository.Object);
+            mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync(role);
             _mockMapper.Setup(m => m.Map<RoleReadDto>(role)).Returns(expectedReadDto);
 
             var result = await _roleService.GetRoleByIdAsync(roleId);
@@ -61,7 +65,9 @@ namespace Tests.Services
         public async Task GetRoleByIdAsync_NonExistingId_ThrowsNotFoundException()
         {
             var roleId = Guid.NewGuid();
-            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync((Role)null);
+            var mockRoleRepository = new Mock<IRepository<Role>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Role>()).Returns(mockRoleRepository.Object);
+            mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync((Role)null);
 
             Func<Task> action = async () => await _roleService.GetRoleByIdAsync(roleId);
 
@@ -88,7 +94,9 @@ namespace Tests.Services
                 Role = new RoleReadDto { Id = u.Role.Id, Name = u.Role.Name }
             }).ToList();
 
-            _mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName))
+            var mockRoleRepository = new Mock<IRepository<Role>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Role>()).Returns(mockRoleRepository.Object);
+            mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName))
                                .ReturnsAsync(new List<Role> { role });
 
             _mockMapper.Setup(m => m.Map<IEnumerable<UserReadDto>>(It.IsAny<IEnumerable<User>>()))
@@ -105,7 +113,9 @@ namespace Tests.Services
         public async Task GetUsersWithRole_NonExistingRoleName_ThrowsNotFoundException()
         {
             var roleName = "NonExistingRole";
-            _mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName)).ReturnsAsync(new List<Role>());
+            var mockRoleRepository = new Mock<IRepository<Role>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Role>()).Returns(mockRoleRepository.Object);
+            mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName)).ReturnsAsync(new List<Role>());
 
             Func<Task> action = async () => await _roleService.GetUsersWithRole(roleName);
 

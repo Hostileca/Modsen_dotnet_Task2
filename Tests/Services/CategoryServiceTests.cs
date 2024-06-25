@@ -4,15 +4,15 @@ namespace Tests.Services
 {
     public class CategoryServiceTests
     {
-        private readonly Mock<ICategoryRepository> _mockRepository;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IMapper> _mockMapper;
         private readonly ICategoryService _categoryService;
 
         public CategoryServiceTests()
         {
-            _mockRepository = new Mock<ICategoryRepository>();
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _categoryService = new CategoryService(_mockRepository.Object, _mockMapper.Object);
+            _categoryService = new CategoryService(_mockUnitOfWork.Object, _mockMapper.Object);
         }
 
         [Fact]
@@ -22,10 +22,12 @@ namespace Tests.Services
             var category = new Category { Id = Guid.NewGuid(), Name = createDto.Name };
             var expectedReadDto = new CategoryDetailedReadDto { Id = category.Id, Name = category.Name };
 
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
             _mockMapper.Setup(m => m.Map<Category>(createDto)).Returns(category);
             _mockMapper.Setup(m => m.Map<CategoryDetailedReadDto>(category)).Returns(expectedReadDto);
-            _mockRepository.Setup(repo => repo.AddAsync(category)).Returns(Task.CompletedTask);
-            _mockRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            mockCategoryRepository.Setup(repo => repo.AddAsync(category)).Returns(Task.CompletedTask);
+            _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync()).ReturnsAsync(0);
 
             var result = await _categoryService.CreateCategoryAsync(createDto);
 
@@ -41,9 +43,11 @@ namespace Tests.Services
             var category = new Category { Id = categoryId, Name = "Test Category" };
             var expectedReadDto = new CategoryDetailedReadDto { Id = category.Id, Name = category.Name };
 
-            _mockRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync(category);
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+            mockCategoryRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync(category);
             _mockMapper.Setup(m => m.Map<CategoryDetailedReadDto>(category)).Returns(expectedReadDto);
-            _mockRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync()).ReturnsAsync(0);
 
             var result = await _categoryService.DeleteCategoryByIdAsync(categoryId);
 
@@ -66,7 +70,9 @@ namespace Tests.Services
                 new CategoryReadDto { Id = categories[1].Id, Name = categories[1].Name }
             };
 
-            _mockRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(categories);
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+            mockCategoryRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(categories);
             _mockMapper.Setup(m => m.Map<IEnumerable<CategoryReadDto>>(categories)).Returns(expectedReadDtos);
 
             var result = await _categoryService.GetAllCategoriesAsync();
@@ -83,7 +89,9 @@ namespace Tests.Services
             var category = new Category { Id = categoryId, Name = "Test Category" };
             var expectedReadDto = new CategoryDetailedReadDto { Id = category.Id, Name = category.Name };
 
-            _mockRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync(category);
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+            mockCategoryRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync(category);
             _mockMapper.Setup(m => m.Map<CategoryDetailedReadDto>(category)).Returns(expectedReadDto);
 
             var result = await _categoryService.GetCategoryByIdAsync(categoryId);
@@ -102,9 +110,11 @@ namespace Tests.Services
             var updatedCategory = new Category { Id = categoryId, Name = updatedDto.Name };
             var expectedReadDto = new CategoryDetailedReadDto { Id = updatedCategory.Id, Name = updatedCategory.Name };
 
-            _mockRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync(existingCategory);
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+            mockCategoryRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync(existingCategory);
             _mockMapper.Setup(m => m.Map(updatedDto, existingCategory)).Returns(updatedCategory);
-            _mockRepository.Setup(repo => repo.SaveChangesAsync()).Returns(Task.CompletedTask);
+            _mockUnitOfWork.Setup(uow => uow.SaveChangesAsync()).ReturnsAsync(0);
             _mockMapper.Setup(m => m.Map<CategoryDetailedReadDto>(updatedCategory)).Returns(expectedReadDto);
 
             var result = await _categoryService.UpdateCategoryAsync(updatedDto);
@@ -126,7 +136,9 @@ namespace Tests.Services
         public async Task DeleteCategoryByIdAsync_NonExistingId_ThrowsKeyNotFoundException()
         {
             var categoryId = Guid.NewGuid();
-            _mockRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync((Category)null);
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+            mockCategoryRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync((Category)null);
 
             Func<Task> action = async () => await _categoryService.DeleteCategoryByIdAsync(categoryId);
 
@@ -137,7 +149,9 @@ namespace Tests.Services
         public async Task GetCategoryByIdAsync_NonExistingId_ThrowsKeyNotFoundException()
         {
             var categoryId = Guid.NewGuid();
-            _mockRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync((Category)null);
+            var mockCategoryRepository = new Mock<IRepository<Category>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Category>()).Returns(mockCategoryRepository.Object);
+            mockCategoryRepository.Setup(repo => repo.GetByIdAsync(categoryId)).ReturnsAsync((Category)null);
 
             Func<Task> action = async () => await _categoryService.GetCategoryByIdAsync(categoryId);
 

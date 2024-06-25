@@ -7,18 +7,16 @@ namespace Tests.Services
     public class UserServiceTests
     {
         private readonly Mock<IPasswordHasher> _mockPasswordHasher;
-        private readonly Mock<IUserRepository> _mockUserRepository;
-        private readonly Mock<IRoleRepository> _mockRoleRepository;
+        private readonly Mock<IUnitOfWork> _mockUnitOfWork;
         private readonly Mock<IMapper> _mockMapper;
         private readonly IUserService _userService;
 
         public UserServiceTests()
         {
             _mockPasswordHasher = new Mock<IPasswordHasher>();
-            _mockUserRepository = new Mock<IUserRepository>();
-            _mockRoleRepository = new Mock<IRoleRepository>();
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockMapper = new Mock<IMapper>();
-            _userService = new UserService(_mockPasswordHasher.Object, _mockUserRepository.Object, _mockRoleRepository.Object, _mockMapper.Object);
+            _userService = new UserService(_mockUnitOfWork.Object, _mockPasswordHasher.Object, _mockMapper.Object);
         }
 
         [Fact]
@@ -30,7 +28,9 @@ namespace Tests.Services
                 new User { Id = Guid.NewGuid(), UserName = "user2", Role = new Role { Id = Guid.NewGuid(), Name = "Admin" } }
             };
 
-            _mockUserRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(users);
+            var mockUserRepository = new Mock<IRepository<User>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
+            mockUserRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(users);
             _mockMapper.Setup(m => m.Map<IEnumerable<UserReadDto>>(users)).Returns(users.Select(u => new UserReadDto { Id = u.Id, UserName = u.UserName, Role = new RoleReadDto { Id = u.Role.Id, Name = u.Role.Name } }));
 
             var result = await _userService.GetAllUsersAsync();
@@ -46,7 +46,9 @@ namespace Tests.Services
             var userId = Guid.NewGuid();
             var existingUser = new User { Id = userId, UserName = "testuser", Role = new Role { Id = Guid.NewGuid(), Name = "User" } };
 
-            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(existingUser);
+            var mockUserRepository = new Mock<IRepository<User>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
+            mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(existingUser);
             _mockMapper.Setup(m => m.Map<UserReadDto>(existingUser)).Returns(new UserReadDto { Id = existingUser.Id, UserName = existingUser.UserName, Role = new RoleReadDto { Id = existingUser.Role.Id, Name = existingUser.Role.Name } });
 
             var result = await _userService.GetUserByIdAsync(userId);
@@ -60,7 +62,9 @@ namespace Tests.Services
         public async Task GetUserByIdAsync_NonExistingUserId_ThrowsNotFoundException()
         {
             var userId = Guid.NewGuid();
-            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User)null);
+            var mockUserRepository = new Mock<IRepository<User>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
+            mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User)null);
 
             Func<Task> action = async () => await _userService.GetUserByIdAsync(userId);
 
@@ -76,8 +80,14 @@ namespace Tests.Services
             var existingUser = new User { Id = userId, UserName = "olduser", RoleId = userUpdateDto.RoleId };
             var existingRole = new Role { Id = roleId, Name = "Admin" };
 
-            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(existingUser);
-            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync(existingRole);
+            var mockUserRepository = new Mock<IRepository<User>>();
+            var mockRoleRepository = new Mock<IRepository<Role>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Role>()).Returns(mockRoleRepository.Object);
+
+            mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(existingUser);
+            mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync(existingRole);
             _mockPasswordHasher.Setup(ph => ph.HashPassword(userUpdateDto.Password)).Returns("updatedhashedpassword");
 
             var updatedUserDto = new UserReadDto
@@ -104,7 +114,10 @@ namespace Tests.Services
         {
             var userUpdateDto = new UserUpdateDto { Id = Guid.NewGuid(), UserName = "updateduser", Password = "updatedpassword", RoleId = Guid.NewGuid() };
 
-            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userUpdateDto.Id)).ReturnsAsync((User)null);
+            var mockUserRepository = new Mock<IRepository<User>>();
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
+
+            mockUserRepository.Setup(repo => repo.GetByIdAsync(userUpdateDto.Id)).ReturnsAsync((User)null);
 
             Func<Task> action = async () => await _userService.UpdateUserAsync(userUpdateDto);
 
@@ -117,8 +130,14 @@ namespace Tests.Services
             var userUpdateDto = new UserUpdateDto { Id = Guid.NewGuid(), UserName = "updateduser", Password = "updatedpassword", RoleId = Guid.NewGuid() };
             var existingUser = new User { Id = userUpdateDto.Id, UserName = "olduser", Role = new Role { Id = Guid.NewGuid(), Name = "User" } };
 
-            _mockUserRepository.Setup(repo => repo.GetByIdAsync(userUpdateDto.Id)).ReturnsAsync(existingUser);
-            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(userUpdateDto.RoleId)).ReturnsAsync((Role)null);
+            var mockUserRepository = new Mock<IRepository<User>>();
+            var mockRoleRepository = new Mock<IRepository<Role>>();
+
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
+            _mockUnitOfWork.Setup(uow => uow.GetRepository<Role>()).Returns(mockRoleRepository.Object);
+
+            mockUserRepository.Setup(repo => repo.GetByIdAsync(userUpdateDto.Id)).ReturnsAsync(existingUser);
+            mockRoleRepository.Setup(repo => repo.GetByIdAsync(userUpdateDto.RoleId)).ReturnsAsync((Role)null);
 
             Func<Task> action = async () => await _userService.UpdateUserAsync(userUpdateDto);
 
