@@ -53,7 +53,7 @@ namespace BusinessLogicLayer.Services.Implementations
             return new AuthenticationResponseDto
             {
                 AccessToken = token,
-                ExpiresIn = DateTime.UtcNow.AddHours(1)
+                ExpiresIn = DateTime.UtcNow.AddHours(double.Parse(_configuration["JwtSettings:ExpiresInMinutes"]))
             };
         }
 
@@ -105,7 +105,7 @@ namespace BusinessLogicLayer.Services.Implementations
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
             var securityToken = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddMinutes(60),
+                expires: DateTime.Now.AddMinutes(double.Parse(_configuration["JwtSettings:ExpiresInMinutes"])),
                 issuer: _configuration["JwtSettings:Issuer"],
                 audience: _configuration["JwtSettings:Audience"],
                 signingCredentials: signingCredentials);
