@@ -1,10 +1,8 @@
 ﻿namespace DataAccessLayer.Models
 {
-    public class OrderItem
+    public class OrderItem : BaseModel
     {
-        public Guid OrderGuid { get; set; }
-        public Guid ProductGuid { get; set; }
-        public Guid ProductId { get; set; }
+        public Guid OrderId { get; set; }
         public Guid ProductId { get; set; }
         public int Amount { get; set; }
         public Order Order { get; set; }
