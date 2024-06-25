@@ -5,8 +5,8 @@ namespace BusinessLogicLayer.Services.Interfaces
 {
     public interface IRoleService
     {
-        Task<IEnumerable<RoleReadDto>> GetAllRolesAsync();
-        Task<RoleReadDto> GetRoleByIdAsync(Guid id);
-        Task<IEnumerable<UserReadDto>> GetUsersWithRole(string role);
+        Task<IEnumerable<RoleReadDto>> GetAllRolesAsync(CancellationToken cancellationToken = default);
+        Task<RoleReadDto> GetRoleByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<IEnumerable<UserReadDto>> GetUsersWithRole(string role, CancellationToken cancellationToken = default);
     }
 }

@@ -18,42 +18,48 @@ namespace BusinessLogicLayer.Services.Implementations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<OrderReadDto> CreateOrderAsync(OrderCreateDto orderCreateDto)
+        public async Task<OrderReadDto> CreateOrderAsync(OrderCreateDto orderCreateDto, CancellationToken cancellationToken = default)
         {
             if (orderCreateDto == null)
+            {
                 throw new ArgumentNullException(nameof(orderCreateDto));
+            }
 
             var order = _mapper.Map<Order>(orderCreateDto);
 
-            await _orderRepository.AddAsync(order);
-            await _orderRepository.SaveChangesAsync();
+            await _orderRepository.AddAsync(order, cancellationToken);
+            await _orderRepository.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<OrderReadDto>(order);
         }
 
-        public async Task<OrderReadDto> DeleteOrderByIdAsync(Guid id)
+        public async Task<OrderReadDto> DeleteOrderByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var order = await _orderRepository.GetByIdAsync(id);
+            var order = await _orderRepository.GetByIdAsync(id, cancellationToken);
             if (order == null)
+            {
                 throw new NotFoundException($"Order not found with id: {id}");
+            }
 
             _orderRepository.Delete(order);
-            await _orderRepository.SaveChangesAsync();
+            await _orderRepository.SaveChangesAsync(cancellationToken);
 
             return _mapper.Map<OrderReadDto>(order);
         }
 
-        public async Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync()
+        public async Task<IEnumerable<OrderReadDto>> GetAllOrdersAsync(CancellationToken cancellationToken = default)
         {
-            var orders = await _orderRepository.GetAllAsync();
+            var orders = await _orderRepository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<OrderReadDto>>(orders);
         }
 
-        public async Task<OrderReadDto> GetOrderByIdAsync(Guid id)
+        public async Task<OrderReadDto> GetOrderByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
-            var order = await _orderRepository.GetByIdAsync(id);
+            var order = await _orderRepository.GetByIdAsync(id, cancellationToken);
             if (order == null)
+            {
                 throw new NotFoundException($"Order not found with id: {id}");
+            }
 
             return _mapper.Map<OrderReadDto>(order);
         }

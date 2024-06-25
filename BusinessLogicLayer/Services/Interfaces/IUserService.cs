@@ -4,10 +4,10 @@ namespace BusinessLogicLayer.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<IEnumerable<UserReadDto>> GetAllUsersAsync();
-        Task<UserReadDto> GetUserByIdAsync(Guid id);
-        Task<UserReadDto> CreateUserAsync(UserCreateDto UserCreateDto);
-        Task<UserReadDto> UpdateUserAsync(UserUpdateDto UserUpdateDto);
-        Task<UserReadDto> DeleteUserByIdAsync(Guid id);
+        Task<IEnumerable<UserReadDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
+        Task<UserReadDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default);
+        Task<UserReadDto> CreateUserAsync(UserCreateDto UserCreateDto, CancellationToken cancellationToken = default);
+        Task<UserReadDto> UpdateUserAsync(UserUpdateDto UserUpdateDto, CancellationToken cancellationToken = default);
+        Task<UserReadDto> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }
