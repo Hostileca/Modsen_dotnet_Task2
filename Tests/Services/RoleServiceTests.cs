@@ -8,6 +8,7 @@ namespace Tests.Services
         private readonly Mock<IRoleRepository> _mockRoleRepository;
         private readonly Mock<IMapper> _mockMapper;
         private readonly IRoleService _roleService;
+        private readonly CancellationToken cancellationToken;
 
         public RoleServiceTests()
         {
@@ -30,7 +31,7 @@ namespace Tests.Services
                 new RoleReadDto { Id = roles[1].Id, Name = roles[1].Name }
             };
 
-            _mockRoleRepository.Setup(repo => repo.GetAllAsync()).ReturnsAsync(roles);
+            _mockRoleRepository.Setup(repo => repo.GetAllAsync(cancellationToken)).ReturnsAsync(roles);
             _mockMapper.Setup(m => m.Map<IEnumerable<RoleReadDto>>(roles)).Returns(expectedReadDtos);
 
             var result = await _roleService.GetAllRolesAsync();
@@ -47,7 +48,7 @@ namespace Tests.Services
             var role = new Role { Id = roleId, Name = "Admin" };
             var expectedReadDto = new RoleReadDto { Id = role.Id, Name = role.Name };
 
-            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync(role);
+            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId, cancellationToken)).ReturnsAsync(role);
             _mockMapper.Setup(m => m.Map<RoleReadDto>(role)).Returns(expectedReadDto);
 
             var result = await _roleService.GetRoleByIdAsync(roleId);
@@ -61,7 +62,7 @@ namespace Tests.Services
         public async Task GetRoleByIdAsync_NonExistingId_ThrowsNotFoundException()
         {
             var roleId = Guid.NewGuid();
-            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId)).ReturnsAsync((Role)null);
+            _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId, cancellationToken)).ReturnsAsync((Role)null);
 
             Func<Task> action = async () => await _roleService.GetRoleByIdAsync(roleId);
 
@@ -88,7 +89,7 @@ namespace Tests.Services
                 Role = new RoleReadDto { Id = u.Role.Id, Name = u.Role.Name }
             }).ToList();
 
-            _mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName))
+            _mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName, cancellationToken))
                                .ReturnsAsync(new List<Role> { role });
 
             _mockMapper.Setup(m => m.Map<IEnumerable<UserReadDto>>(It.IsAny<IEnumerable<User>>()))
@@ -105,11 +106,11 @@ namespace Tests.Services
         public async Task GetUsersWithRole_NonExistingRoleName_ThrowsNotFoundException()
         {
             var roleName = "NonExistingRole";
-            _mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName)).ReturnsAsync(new List<Role>());
+            _mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName, cancellationToken)).ReturnsAsync(new List<Role>());
 
             Func<Task> action = async () => await _roleService.GetUsersWithRole(roleName);
 
-            await action.Should().ThrowAsync<InvalidOperationException>();
+            await action.Should().ThrowAsync<NotFoundException>();
         }
     }
 }
