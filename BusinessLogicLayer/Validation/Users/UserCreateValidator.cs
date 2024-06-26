@@ -11,6 +11,6 @@ public class UserCreateValidator : AbstractValidator<UserCreateDto>
             .UserName();
 
         RuleFor(user => user.Password)
-            .Password();
+            .PasswordCreating();
     }
 }
