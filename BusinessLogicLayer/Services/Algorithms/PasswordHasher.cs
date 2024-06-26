@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Security.Cryptography;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace BusinessLogicLayer.Services.Algorithms
 {
@@ -11,7 +10,7 @@ namespace BusinessLogicLayer.Services.Algorithms
 
         public PasswordHasher(IConfiguration config) 
         {
-            var key = config.GetValue<string>("SecretKey") ?? throw new ArgumentNullException("Secret key not found");
+            var key = config["Hashing:SecretKey"] ?? throw new ArgumentNullException("Secret key not found");
             Console.WriteLine(key);
             _key = Encoding.UTF8.GetBytes(key);
         }

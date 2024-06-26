@@ -42,12 +42,14 @@ namespace BusinessLogicLayer
             services.AddScoped<IOrderItemRepository, OrderItemRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             return services;
         }
 
         private static IServiceCollection ServicesConfigure(this IServiceCollection services)
         {
-            services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            services.AddTransient<IPasswordHasher, PasswordHasher>();
 
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IProductService, ProductService>();
