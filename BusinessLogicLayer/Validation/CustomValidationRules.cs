@@ -39,7 +39,12 @@ public static class CustomValidationRules
     {
         return ruleBuilder
             .NotNull().WithMessage("Password should not be null")
-            .NotEmpty().WithMessage("Password should not be empty")
+            .NotEmpty().WithMessage("Password should not be empty");
+    }
+    public static IRuleBuilder<T, string> PasswordCreating<T>(this IRuleBuilder<T, string> ruleBuilder)
+    {
+        return ruleBuilder
+            .Password()
             .Length(8, 20).WithMessage("Password should have length between 8 and 20")
             .Matches("[A-Z]").WithMessage("Password should contain at least one uppercase letter")
             .Matches("[a-z]").WithMessage("Password should contain at least one lowercase letter")
