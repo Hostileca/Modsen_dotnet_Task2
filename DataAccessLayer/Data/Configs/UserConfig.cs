@@ -14,6 +14,9 @@ namespace DataAccessLayer.Data.Configs
                    .IsRequired()
                    .HasMaxLength(50);
 
+            builder.HasIndex(u => u.UserName)
+                   .IsUnique();
+
             builder.Property(u => u.HashedPassword)
                    .IsRequired();
 

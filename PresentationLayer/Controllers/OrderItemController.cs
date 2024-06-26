@@ -1,5 +1,7 @@
-﻿using BusinessLogicLayer.Dtos.OrderItems;
+﻿using BusinessLogicLayer;
+using BusinessLogicLayer.Dtos.OrderItems;
 using BusinessLogicLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -15,6 +17,7 @@ namespace PresentationLayer.Controllers
             _orderItemService = orderItemService;
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet]
         public async Task<IActionResult> GetAllOrderItems(CancellationToken cancellationToken = default)
         {
@@ -22,6 +25,7 @@ namespace PresentationLayer.Controllers
             return Ok(orderItems);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderItemById(Guid id, CancellationToken cancellationToken = default)
         {
@@ -29,6 +33,7 @@ namespace PresentationLayer.Controllers
             return Ok(orderItem);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateOrderItem(OrderItemCreateDto orderItemCreateDto, CancellationToken cancellationToken = default)
         {
@@ -36,6 +41,7 @@ namespace PresentationLayer.Controllers
             return Ok(orderItem);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrderItem(Guid id, OrderItemUpdateDto orderItemUpdateDto, CancellationToken cancellationToken = default)
         {
@@ -44,6 +50,7 @@ namespace PresentationLayer.Controllers
             return Ok(orderItem);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrderItem(Guid id, CancellationToken cancellationToken = default)
         {

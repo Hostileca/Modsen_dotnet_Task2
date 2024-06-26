@@ -17,10 +17,10 @@ namespace BusinessLogicLayer.Services.Implementations
         public OrderItemService(IOrderItemRepository orderItemRepository, IProductRepository productRepository,
             IOrderRepository orderRepository, IMapper mapper)
         {
-            _orderItemRepository = orderItemRepository ?? throw new ArgumentNullException(nameof(orderItemRepository));
-            _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
-            _orderRepository = orderRepository ?? throw new ArgumentNullException(nameof(orderRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _orderItemRepository = orderItemRepository;
+            _productRepository = productRepository;
+            _orderRepository = orderRepository;
+            _mapper = mapper;
         }
 
         public async Task<OrderItemReadDto> CreateOrderItemAsync(OrderItemCreateDto orderItemCreateDto, CancellationToken cancellationToken = default)

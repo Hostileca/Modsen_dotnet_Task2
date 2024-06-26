@@ -9,7 +9,7 @@ namespace PresentationLayer
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            ApplicationInjection.AddApplication(builder.Services, builder.Configuration);
+            builder.Services.AddApplication(builder.Configuration);
             builder.Services.AddScoped<ExceptionHandlingMiddleware>();
 
             builder.Services.AddControllers();
@@ -17,8 +17,8 @@ namespace PresentationLayer
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
-
-            ApplicationInjection.StartApplication(app.Services);
+            app.Services.StartApplication();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             if (app.Environment.IsDevelopment())
             {

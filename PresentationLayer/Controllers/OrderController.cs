@@ -1,5 +1,7 @@
-﻿using BusinessLogicLayer.Dtos.Orders;
+﻿using BusinessLogicLayer;
+using BusinessLogicLayer.Dtos.Orders;
 using BusinessLogicLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -29,6 +31,7 @@ namespace PresentationLayer.Controllers
             return Ok(order);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateOrder(OrderCreateDto orderCreateDto, CancellationToken cancellationToken = default)
         {
@@ -36,6 +39,7 @@ namespace PresentationLayer.Controllers
             return Ok(order);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(Guid id, CancellationToken cancellationToken = default)
         {

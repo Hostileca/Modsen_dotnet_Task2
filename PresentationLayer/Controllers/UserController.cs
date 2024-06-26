@@ -1,5 +1,7 @@
-﻿using BusinessLogicLayer.Dtos.Users;
+﻿using BusinessLogicLayer;
+using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PresentationLayer.Controllers
@@ -15,6 +17,7 @@ namespace PresentationLayer.Controllers
             _userService = userService;
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers(CancellationToken cancellationToken = default)
         {
@@ -22,6 +25,7 @@ namespace PresentationLayer.Controllers
             return Ok(users);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(Guid id, CancellationToken cancellationToken = default)
         {
@@ -36,6 +40,7 @@ namespace PresentationLayer.Controllers
             return Ok(user);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(Guid id, UserUpdateDto userUpdateDto, CancellationToken cancellationToken = default)
         {
@@ -44,11 +49,19 @@ namespace PresentationLayer.Controllers
             return Ok(user);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(Guid id, CancellationToken cancellationToken = default)
         {
             var deletedUser = await _userService.DeleteUserByIdAsync(id, cancellationToken);
             return Ok(deletedUser);
+        }
+
+        [HttpPost("authenticate")]
+        public async Task<IActionResult> Authenticate(UserLoginDto loginDto, CancellationToken cancellationToken = default)
+        {
+            var tokenResponse = await _userService.AuthenticateAsync(loginDto, cancellationToken);
+            return Ok(tokenResponse);
         }
     }
 }

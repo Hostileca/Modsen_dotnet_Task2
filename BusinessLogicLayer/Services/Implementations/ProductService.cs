@@ -17,9 +17,9 @@ namespace BusinessLogicLayer.Services.Implementations
 
         public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper)
         {
-            _productRepository = productRepository ?? throw new ArgumentNullException(nameof(productRepository));
-            _categoryRepository = categoryRepository ?? throw new ArgumentNullException(nameof(categoryRepository));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
         public async Task<ProductDetailedReadDto> CreateProductAsync(ProductCreateDto productCreateDto, CancellationToken cancellationToken = default)
