@@ -7,6 +7,9 @@ public class OrderItemUpdateValidator : AbstractValidator<OrderItemUpdateDto>
 {
     public OrderItemUpdateValidator()
     {
+        RuleFor(orderItem => orderItem.UserName)
+            .UserName();
+
         RuleFor(orderItem => orderItem.Amount)
             .ItemAmount();
     }

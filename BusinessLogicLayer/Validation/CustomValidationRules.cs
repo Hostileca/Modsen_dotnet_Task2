@@ -28,12 +28,18 @@ public static class CustomValidationRules
         return ruleBuilder
             .NotEqual(Guid.Empty).WithMessage("{PropertyName} cannot by empty guid!");
     }
-    public static IRuleBuilder<T, string> UserName<T>(this IRuleBuilder<T, string> ruleBuilder)
+    public static IRuleBuilder<T, string?> UserName<T>(this IRuleBuilder<T, string?> ruleBuilder, bool allowNullCheck = true)
     {
+        if (allowNullCheck)
+        {
+            ruleBuilder = ruleBuilder
+                .NotNull().WithMessage("Username should not be null")
+                .NotEmpty().WithMessage("Username should not be empty");
+        }
+
         return ruleBuilder
-            .NotNull().WithMessage("Username should not be null")
-            .NotEmpty().WithMessage("Username should not be empty")
-            .Length(3, 20).WithMessage("Username should have length between 3 and 20");
+            .Must(username => username == null || (username.Length >= 3 && username.Length <= 20))
+            .WithMessage("Username should have length between 3 and 20");
     }
     public static IRuleBuilder<T, string> Password<T>(this IRuleBuilder<T, string> ruleBuilder)
     {

@@ -9,5 +9,8 @@ public class OrderItemCreateValidator : AbstractValidator<OrderItemCreateDto>
     {
         RuleFor(orderItem => orderItem.Amount)
             .ItemAmount();
+
+        RuleFor(orderItem => orderItem.UserName)
+            .UserName();
     }
 }

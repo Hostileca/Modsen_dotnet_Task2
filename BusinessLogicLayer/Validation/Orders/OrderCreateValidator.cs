@@ -8,9 +8,12 @@ public class OrderCreateValidator : AbstractValidator<OrderCreateDto>
 {
     public OrderCreateValidator()
     {
+        RuleFor(order => order.UserName)
+            .UserName(false);
+
         RuleFor(order => order.OrderItems)
             .NotNull().WithMessage("Order items should not be null")
-            .NotEmpty().WithMessage("Order items should not be empty");
-            //.ForEach(item => item.SetValidator(new OrderItemCreateValidator()));
+            .NotEmpty().WithMessage("Order items should not be empty")
+            .ForEach(item => item.SetValidator(new OrderItemCreateNewOrderValidator()));
     }
 }
