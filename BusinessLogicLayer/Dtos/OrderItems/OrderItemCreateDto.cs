@@ -8,6 +8,6 @@ namespace BusinessLogicLayer.Dtos.OrderItems
         public Guid OrderId { get; set; }
         public Guid ProductId { get; set; }
         [JsonIgnore]
-        public string UserName { get; set; } 
+        public string UserName { get; set; }
     }
 }

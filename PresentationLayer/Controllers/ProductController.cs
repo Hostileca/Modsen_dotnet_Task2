@@ -32,7 +32,7 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpGet("query")]
-        public async Task<IActionResult> GetProductsByQuery([FromQuery]ProductQuery filter, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetProductsByQuery([FromQuery] ProductQuery filter, CancellationToken cancellationToken = default)
         {
             var products = await _productService.GetProductsByFilter(filter, cancellationToken);
             return Ok(products);

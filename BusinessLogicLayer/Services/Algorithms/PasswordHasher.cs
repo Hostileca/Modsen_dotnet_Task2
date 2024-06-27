@@ -8,7 +8,7 @@ namespace BusinessLogicLayer.Services.Algorithms
     {
         private readonly byte[] _key;
 
-        public PasswordHasher(IConfiguration config) 
+        public PasswordHasher(IConfiguration config)
         {
             var key = config["Hashing:SecretKey"] ?? throw new ArgumentNullException("Secret key not found");
             Console.WriteLine(key);

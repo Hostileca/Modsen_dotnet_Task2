@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using BusinessLogicLayer.Dtos.Users;
+﻿using BusinessLogicLayer.Dtos.Users;
+using FluentValidation;
 
 namespace BusinessLogicLayer.Validation.Users;
 

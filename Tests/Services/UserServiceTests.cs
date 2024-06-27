@@ -2,9 +2,9 @@ using BusinessLogicLayer.Dtos.Roles;
 using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Algorithms;
 using Microsoft.Extensions.Configuration;
-using System.Security.Cryptography;
-using System.Linq.Expressions;
 using System.Data;
+using System.Linq.Expressions;
+using System.Security.Cryptography;
 
 namespace Tests.Services
 {
@@ -266,10 +266,11 @@ namespace Tests.Services
             _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
             mockUserRepository.Setup(repo => repo.GetByIdAsync(userId, cancellationToken)).ReturnsAsync(existingUser);
             mockUserRepository.Setup(repo => repo.Delete(existingUser)).Verifiable();
-            _mockMapper.Setup(m => m.Map<UserReadDto>(existingUser)).Returns(new UserReadDto { 
-                Id = existingUser.Id, 
-                UserName = existingUser.UserName, 
-                Role = new RoleReadDto { Id = existingUser.Role.Id, Name = existingUser.Role.Name } 
+            _mockMapper.Setup(m => m.Map<UserReadDto>(existingUser)).Returns(new UserReadDto
+            {
+                Id = existingUser.Id,
+                UserName = existingUser.UserName,
+                Role = new RoleReadDto { Id = existingUser.Role.Id, Name = existingUser.Role.Name }
             });
 
             var result = await _userService.DeleteUserByIdAsync(userId, cancellationToken);

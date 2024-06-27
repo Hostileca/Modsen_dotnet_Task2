@@ -1,5 +1,4 @@
 ﻿using BusinessLogicLayer.Dtos.Orders;
-using BusinessLogicLayer.Validation.OrderItems;
 using FluentValidation;
 
 namespace BusinessLogicLayer.Validation.Orders;
@@ -8,12 +7,9 @@ public class OrderCreateValidator : AbstractValidator<OrderCreateDto>
 {
     public OrderCreateValidator()
     {
-        RuleFor(order => order.UserName)
-            .UserName(false);
-
         RuleFor(order => order.OrderItems)
             .NotNull().WithMessage("Order items should not be null")
-            .NotEmpty().WithMessage("Order items should not be empty")
-            .ForEach(item => item.SetValidator(new OrderItemCreateNewOrderValidator()));
+            .NotEmpty().WithMessage("Order items should not be empty");
+        //.ForEach(item => item.SetValidator(new OrderItemCreateValidator()));
     }
 }

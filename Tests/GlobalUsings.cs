@@ -1,10 +1,10 @@
+global using AutoMapper;
+global using BusinessLogicLayer.Exceptions;
+global using BusinessLogicLayer.Profiles;
 global using BusinessLogicLayer.Services.Implementations;
 global using BusinessLogicLayer.Services.Interfaces;
 global using DataAccessLayer.Data.Interfaces;
-global using BusinessLogicLayer.Exceptions;
-global using BusinessLogicLayer.Profiles;
 global using DataAccessLayer.Models;
 global using FluentAssertions;
-global using AutoMapper;
-global using Xunit;
 global using Moq;
+global using Xunit;

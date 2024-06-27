@@ -1,6 +1,5 @@
 ﻿using BusinessLogicLayer;
 using BusinessLogicLayer.Dtos.Orders;
-using BusinessLogicLayer.Services.Implementations;
 using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,17 +34,7 @@ namespace PresentationLayer.Controllers
             return Ok(order);
         }
 
-        [Authorize]
-        [HttpPost]
-        public async Task<IActionResult> CreateOrder(OrderCreateDto orderCreateDto, CancellationToken cancellationToken = default)
-        {
-            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
-            orderCreateDto.UserName = userName;
-            var order = await _orderService.CreateOrderAsync(orderCreateDto, cancellationToken);
-            return Ok(order);
-        }
-
-        [Authorize]
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrder(Guid id, CancellationToken cancellationToken = default)
         {
@@ -54,12 +43,32 @@ namespace PresentationLayer.Controllers
         }
 
         [Authorize]
-        [HttpGet("user-orders")]
+        [HttpPost("api/v1/user/orders")]
+        public async Task<IActionResult> CreateOrder(OrderCreateDto orderCreateDto, CancellationToken cancellationToken = default)
+        {
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            orderCreateDto.UserName = userName;
+            var order = await _orderService.CreateOrderAsync(orderCreateDto, cancellationToken);
+            return Ok(order);
+        }
+
+
+        [Authorize]
+        [HttpGet("api/v1/user/orders")]
         public async Task<IActionResult> GetUserOrders(CancellationToken cancellationToken = default)
         {
             var userName = User.FindFirst(ClaimTypes.Name)?.Value;
             var orders = await _orderService.GetUserOrders(userName, cancellationToken);
             return Ok(orders);
+        }
+
+        [Authorize]
+        [HttpDelete("api/v1/user/orders/{id}")]
+        public async Task<IActionResult> DeleteUserOrder(Guid id, CancellationToken cancellationToken = default)
+        {
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            var deletedOrder = await _orderService.DeleteUserOrderByIdAsync(id, userName, cancellationToken);
+            return Ok(deletedOrder);
         }
     }
 }

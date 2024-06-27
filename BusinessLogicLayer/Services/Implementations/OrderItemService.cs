@@ -37,7 +37,7 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new NotFoundException($"Product not found with id: {orderItemCreateDto.ProductId}");
             }
 
-            var existingOrder = (await orderRepository.GetByPredicateAsync(o => o.User.UserName == orderItemCreateDto.UserName && 
+            var existingOrder = (await orderRepository.GetByPredicateAsync(o => o.User.UserName == orderItemCreateDto.UserName &&
                                                                              o.Id == orderItemCreateDto.OrderId, cancellationToken)).FirstOrDefault();
             if (existingOrder == null)
             {

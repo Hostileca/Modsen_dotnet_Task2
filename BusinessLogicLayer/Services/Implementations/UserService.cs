@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using BusinessLogicLayer.Dtos.Orders;
 using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Algorithms;
 using BusinessLogicLayer.Services.Interfaces;
-using DataAccessLayer.Data.Implementations;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 using Microsoft.Extensions.Configuration;
@@ -41,7 +39,7 @@ namespace BusinessLogicLayer.Services.Implementations
             var userRepository = _unitOfWork.GetRepository<User>();
 
             var existingUser = (await userRepository.GetByPredicateAsync(user => user.UserName == loginDto.UserName, cancellationToken)).FirstOrDefault();
-            if(existingUser == null)
+            if (existingUser == null)
             {
                 throw new NotFoundException($"User not found with username {loginDto.UserName}");
             }
@@ -87,7 +85,7 @@ namespace BusinessLogicLayer.Services.Implementations
         public async Task<UserReadDto> DeleteUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var userRepository = _unitOfWork.GetRepository<User>();
-            
+
             var user = await userRepository.GetByIdAsync(id, cancellationToken);
             if (user == null)
             {
@@ -124,7 +122,7 @@ namespace BusinessLogicLayer.Services.Implementations
         public async Task<IEnumerable<UserReadDto>> GetAllUsersAsync(CancellationToken cancellationToken = default)
         {
             var userRepository = _unitOfWork.GetRepository<User>();
-            
+
             var user = await userRepository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<UserReadDto>>(user);
         }
@@ -132,7 +130,7 @@ namespace BusinessLogicLayer.Services.Implementations
         public async Task<UserReadDto> GetUserByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var userRepository = _unitOfWork.GetRepository<User>();
-            
+
             var user = await userRepository.GetByIdAsync(id, cancellationToken);
             if (user == null)
             {

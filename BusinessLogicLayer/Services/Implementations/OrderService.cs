@@ -2,7 +2,6 @@
 using BusinessLogicLayer.Dtos.Orders;
 using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Interfaces;
-using DataAccessLayer.Data.Implementations;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 
@@ -46,6 +45,21 @@ namespace BusinessLogicLayer.Services.Implementations
         public async Task<OrderReadDto> DeleteOrderByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var order = await _orderRepository.GetByIdAsync(id, cancellationToken);
+            if (order == null)
+            {
+                throw new NotFoundException($"Order not found with id: {id}");
+            }
+
+            _orderRepository.Delete(order);
+            await _orderRepository.SaveChangesAsync(cancellationToken);
+
+            return _mapper.Map<OrderReadDto>(order);
+        }
+
+        public async Task<OrderReadDto> DeleteUserOrderByIdAsync(Guid id, string userName, CancellationToken cancellationToken = default)
+        {
+            var order = (await _orderRepository.GetByPredicateAsync(o => o.Id == id &&
+             o.User.UserName == userName, cancellationToken)).FirstOrDefault();
             if (order == null)
             {
                 throw new NotFoundException($"Order not found with id: {id}");

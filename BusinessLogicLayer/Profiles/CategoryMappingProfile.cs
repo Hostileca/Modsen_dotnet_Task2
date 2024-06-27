@@ -14,9 +14,9 @@ namespace BusinessLogicLayer.Profiles
 
             CreateMap<CategoryUpdateDto, Category>()
                 .ForMember(dest => dest.Products, opt => opt.Ignore());
-            
+
             CreateMap<Category, CategoryReadDto>();
-            
+
             CreateMap<Category, CategoryDetailedReadDto>()
                 .ForMember(dest => dest.Products, opt => opt.MapFrom(src => src.Products));
         }

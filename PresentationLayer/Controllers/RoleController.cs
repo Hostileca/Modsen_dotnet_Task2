@@ -7,7 +7,7 @@ namespace PresentationLayer.Controllers
 {
     [Route("api/v1/roles")]
     [ApiController]
-    public class RoleController : ControllerBase    
+    public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
 
