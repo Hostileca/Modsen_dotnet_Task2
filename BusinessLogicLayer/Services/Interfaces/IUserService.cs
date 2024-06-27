@@ -1,4 +1,5 @@
-﻿using BusinessLogicLayer.Dtos.Users;
+﻿using BusinessLogicLayer.Dtos.Orders;
+using BusinessLogicLayer.Dtos.Users;
 
 namespace BusinessLogicLayer.Services.Interfaces
 {

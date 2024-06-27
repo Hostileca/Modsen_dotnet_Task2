@@ -1,9 +1,12 @@
 ﻿using BusinessLogicLayer.Dtos.OrderItems;
+using System.Text.Json.Serialization;
 
 namespace BusinessLogicLayer.Dtos.Orders
 {
     public class OrderCreateDto
     {
-        public ICollection<OrderItemCreateDto> OrderItems { get; set; }
+        [JsonIgnore]
+        public string? UserName { get; set; }  
+        public ICollection<OrderItemCreateNewOrderDto> OrderItems { get; set; }
     }
 }

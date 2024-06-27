@@ -37,7 +37,8 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new NotFoundException($"Product not found with id: {orderItemCreateDto.ProductId}");
             }
 
-            var existingOrder = await orderRepository.GetByIdAsync(orderItemCreateDto.OrderId, cancellationToken);
+            var existingOrder = (await orderRepository.GetByPredicateAsync(o => o.User.UserName == orderItemCreateDto.UserName && 
+                                                                             o.Id == orderItemCreateDto.OrderId, cancellationToken)).FirstOrDefault();
             if (existingOrder == null)
             {
                 throw new NotFoundException($"Order not found with id: {orderItemCreateDto.OrderId}");
@@ -98,7 +99,8 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var orderItemRepository = _unitOfWork.GetRepository<OrderItem>();
 
-            var existingOrderItem = await orderItemRepository.GetByIdAsync(orderItemUpdateDto.Id, cancellationToken);
+            var existingOrderItem = (await orderItemRepository.GetByPredicateAsync(oi => oi.Id == orderItemUpdateDto.Id &&
+                                            oi.Order.User.UserName == orderItemUpdateDto.UserName, cancellationToken)).FirstOrDefault();
             if (existingOrderItem == null)
             {
                 throw new KeyNotFoundException($"Order item not found with id: {orderItemUpdateDto.Id}");

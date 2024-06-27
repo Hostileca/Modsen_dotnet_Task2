@@ -6,6 +6,8 @@ namespace BusinessLogicLayer.Dtos.OrderItems
     {
         [JsonIgnore]
         public Guid Id { get; set; }
+        [JsonIgnore]
+        public string UserName { get; set; }
         public int Amount { get; set; }
     }
 }

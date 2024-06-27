@@ -2,6 +2,7 @@
 using BusinessLogicLayer.Dtos.Orders;
 using BusinessLogicLayer.Exceptions;
 using BusinessLogicLayer.Services.Interfaces;
+using DataAccessLayer.Data.Implementations;
 using DataAccessLayer.Data.Interfaces;
 using DataAccessLayer.Models;
 
@@ -10,10 +11,12 @@ namespace BusinessLogicLayer.Services.Implementations
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IUserRepository userRepository, IMapper mapper)
         {
+            _userRepository = userRepository;
             _orderRepository = orderRepository;
             _mapper = mapper;
         }
@@ -25,7 +28,14 @@ namespace BusinessLogicLayer.Services.Implementations
                 throw new ArgumentNullException(nameof(orderCreateDto));
             }
 
+            var user = (await _userRepository.GetByPredicateAsync(u => u.UserName == orderCreateDto.UserName)).FirstOrDefault();
+            if (orderCreateDto == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
             var order = _mapper.Map<Order>(orderCreateDto);
+            order.User = user;
 
             await _orderRepository.AddAsync(order, cancellationToken);
             await _orderRepository.SaveChangesAsync(cancellationToken);
@@ -62,6 +72,12 @@ namespace BusinessLogicLayer.Services.Implementations
             }
 
             return _mapper.Map<OrderReadDto>(order);
+        }
+
+        public async Task<IEnumerable<OrderReadDto>> GetUserOrders(string username, CancellationToken cancellationToken = default)
+        {
+            var orders = (await _userRepository.GetByPredicateAsync(u => u.UserName == username, cancellationToken)).FirstOrDefault().Orders;
+            return _mapper.Map<IEnumerable<OrderReadDto>>(orders);
         }
     }
 }

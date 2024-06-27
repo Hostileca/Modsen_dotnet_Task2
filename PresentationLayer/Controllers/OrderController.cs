@@ -1,8 +1,10 @@
 ﻿using BusinessLogicLayer;
 using BusinessLogicLayer.Dtos.Orders;
+using BusinessLogicLayer.Services.Implementations;
 using BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace PresentationLayer.Controllers
 {
@@ -17,6 +19,7 @@ namespace PresentationLayer.Controllers
             _orderService = orderService;
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet]
         public async Task<IActionResult> GetAllOrders(CancellationToken cancellationToken = default)
         {
@@ -24,6 +27,7 @@ namespace PresentationLayer.Controllers
             return Ok(orders);
         }
 
+        [Authorize(Roles = $"{RoleConstants.Admin}")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOrderById(Guid id, CancellationToken cancellationToken = default)
         {
@@ -35,6 +39,8 @@ namespace PresentationLayer.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder(OrderCreateDto orderCreateDto, CancellationToken cancellationToken = default)
         {
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            orderCreateDto.UserName = userName;
             var order = await _orderService.CreateOrderAsync(orderCreateDto, cancellationToken);
             return Ok(order);
         }
@@ -45,6 +51,15 @@ namespace PresentationLayer.Controllers
         {
             var deletedOrder = await _orderService.DeleteOrderByIdAsync(id, cancellationToken);
             return Ok(deletedOrder);
+        }
+
+        [Authorize]
+        [HttpGet("user-orders")]
+        public async Task<IActionResult> GetUserOrders(CancellationToken cancellationToken = default)
+        {
+            var userName = User.FindFirst(ClaimTypes.Name)?.Value;
+            var orders = await _orderService.GetUserOrders(userName, cancellationToken);
+            return Ok(orders);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace BusinessLogicLayer.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<CategoryDetailedReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto, CancellationToken cancellationToken = default)
+        public async Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto, CancellationToken cancellationToken = default)
         {
             if (categoryCreateDto == null)
             {
@@ -30,7 +30,7 @@ namespace BusinessLogicLayer.Services.Implementations
             await _categoryRepository.AddAsync(category, cancellationToken);
             await _categoryRepository.SaveChangesAsync(cancellationToken);
 
-            return _mapper.Map<CategoryDetailedReadDto>(category);
+            return _mapper.Map<CategoryReadDto>(category);
         }
 
         public async Task<CategoryDetailedReadDto> DeleteCategoryByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -65,7 +65,7 @@ namespace BusinessLogicLayer.Services.Implementations
             return _mapper.Map<CategoryDetailedReadDto>(category);
         }
 
-        public async Task<CategoryDetailedReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto, CancellationToken cancellationToken = default)
+        public async Task<CategoryReadDto> UpdateCategoryAsync(CategoryUpdateDto categoryUpdateDto, CancellationToken cancellationToken = default)
         {
             if (categoryUpdateDto == null)
             {
@@ -80,7 +80,7 @@ namespace BusinessLogicLayer.Services.Implementations
 
             var newCategory = _mapper.Map(categoryUpdateDto, existingCategory);
             await _categoryRepository.SaveChangesAsync(cancellationToken);
-            return _mapper.Map<CategoryDetailedReadDto>(newCategory);
+            return _mapper.Map<CategoryReadDto>(newCategory);
         }
     }
 }
