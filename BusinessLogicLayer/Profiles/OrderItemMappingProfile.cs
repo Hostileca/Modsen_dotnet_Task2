@@ -16,7 +16,11 @@ namespace BusinessLogicLayer.Profiles
             CreateMap<OrderItem, OrderItemReadDto>()
                 .ForMember(dest => dest.Product, opt => opt.MapFrom(src => src.Product));
 
-            CreateMap<OrderItemCreateNewOrderDto, OrderItem>();
+            CreateMap<OrderItemCreateNewOrderDto, OrderItem>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.Order, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderId, opt => opt.Ignore())
+                .ForMember(dest => dest.Product, opt => opt.Ignore());
         }
     }
 }

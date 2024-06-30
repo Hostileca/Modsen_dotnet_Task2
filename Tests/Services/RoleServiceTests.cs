@@ -27,8 +27,8 @@ namespace Tests.Services
             };
             var expectedReadDtos = new List<RoleReadDto>
             {
-                new RoleReadDto { Id = roles[0].Id, Name = roles[0].Name },
-                new RoleReadDto { Id = roles[1].Id, Name = roles[1].Name }
+                new RoleReadDto { Name = roles[0].Name },
+                new RoleReadDto { Name = roles[1].Name }
             };
 
             _mockRoleRepository.Setup(repo => repo.GetAllAsync(cancellationToken)).ReturnsAsync(roles);
@@ -46,7 +46,7 @@ namespace Tests.Services
         {
             var roleId = Guid.NewGuid();
             var role = new Role { Id = roleId, Name = "Admin" };
-            var expectedReadDto = new RoleReadDto { Id = role.Id, Name = role.Name };
+            var expectedReadDto = new RoleReadDto { Name = role.Name };
 
             _mockRoleRepository.Setup(repo => repo.GetByIdAsync(roleId, cancellationToken)).ReturnsAsync(role);
             _mockMapper.Setup(m => m.Map<RoleReadDto>(role)).Returns(expectedReadDto);
@@ -54,7 +54,6 @@ namespace Tests.Services
             var result = await _roleService.GetRoleByIdAsync(roleId);
 
             result.Should().NotBeNull();
-            result.Id.Should().Be(roleId);
             result.Name.Should().Be("Admin");
         }
 
@@ -84,9 +83,8 @@ namespace Tests.Services
 
             var expectedReadDtos = users.Select(u => new UserReadDto
             {
-                Id = u.Id,
                 UserName = u.UserName,
-                Role = new RoleReadDto { Id = u.Role.Id, Name = u.Role.Name }
+                Role = new RoleReadDto { Name = u.Role.Name }
             }).ToList();
 
             _mockRoleRepository.Setup(repo => repo.GetByPredicateAsync(r => r.Name == roleName, cancellationToken))

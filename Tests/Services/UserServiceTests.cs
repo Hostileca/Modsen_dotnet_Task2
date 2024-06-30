@@ -2,9 +2,9 @@ using BusinessLogicLayer.Dtos.Roles;
 using BusinessLogicLayer.Dtos.Users;
 using BusinessLogicLayer.Services.Algorithms;
 using Microsoft.Extensions.Configuration;
-using System.Data;
-using System.Linq.Expressions;
 using System.Security.Cryptography;
+using System.Linq.Expressions;
+using System.Data;
 
 namespace Tests.Services
 {
@@ -39,7 +39,7 @@ namespace Tests.Services
             var mockUserRepository = new Mock<IRepository<User>>();
             _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
             mockUserRepository.Setup(repo => repo.GetAllAsync(cancellationToken)).ReturnsAsync(users);
-            _mockMapper.Setup(m => m.Map<IEnumerable<UserReadDto>>(users)).Returns(users.Select(u => new UserReadDto { Id = u.Id, UserName = u.UserName, Role = new RoleReadDto { Id = u.Role.Id, Name = u.Role.Name } }));
+            _mockMapper.Setup(m => m.Map<IEnumerable<UserReadDto>>(users)).Returns(users.Select(u => new UserReadDto { UserName = u.UserName, Role = new RoleReadDto { Name = u.Role.Name } }));
 
             var result = await _userService.GetAllUsersAsync(cancellationToken);
 
@@ -57,12 +57,11 @@ namespace Tests.Services
             var mockUserRepository = new Mock<IRepository<User>>();
             _mockUnitOfWork.Setup(uow => uow.GetRepository<User>()).Returns(mockUserRepository.Object);
             mockUserRepository.Setup(repo => repo.GetByIdAsync(userId, cancellationToken)).ReturnsAsync(existingUser);
-            _mockMapper.Setup(m => m.Map<UserReadDto>(existingUser)).Returns(new UserReadDto { Id = existingUser.Id, UserName = existingUser.UserName, Role = new RoleReadDto { Id = existingUser.Role.Id, Name = existingUser.Role.Name } });
+            _mockMapper.Setup(m => m.Map<UserReadDto>(existingUser)).Returns(new UserReadDto { UserName = existingUser.UserName, Role = new RoleReadDto { Name = existingUser.Role.Name } });
 
             var result = await _userService.GetUserByIdAsync(userId, cancellationToken);
 
             result.Should().NotBeNull();
-            result.Id.Should().Be(userId);
             result.UserName.Should().Be("testuser");
         }
 
@@ -100,19 +99,16 @@ namespace Tests.Services
 
             var updatedUserDto = new UserReadDto
             {
-                Id = userId,
                 UserName = userUpdateDto.UserName,
-                Role = new RoleReadDto { Id = existingRole.Id, Name = existingRole.Name }
+                Role = new RoleReadDto { Name = existingRole.Name }
             };
             _mockMapper.Setup(m => m.Map<UserReadDto>(It.IsAny<User>())).Returns(updatedUserDto);
 
             var result = await _userService.UpdateUserAsync(userUpdateDto, cancellationToken);
 
             result.Should().NotBeNull();
-            result.Id.Should().Be(userId);
             result.UserName.Should().Be("updateduser");
             result.Role.Should().NotBeNull();
-            result.Role.Id.Should().Be(existingRole.Id);
             result.Role.Name.Should().Be(existingRole.Name);
         }
 
@@ -268,15 +264,13 @@ namespace Tests.Services
             mockUserRepository.Setup(repo => repo.Delete(existingUser)).Verifiable();
             _mockMapper.Setup(m => m.Map<UserReadDto>(existingUser)).Returns(new UserReadDto
             {
-                Id = existingUser.Id,
                 UserName = existingUser.UserName,
-                Role = new RoleReadDto { Id = existingUser.Role.Id, Name = existingUser.Role.Name }
+                Role = new RoleReadDto { Name = existingUser.Role.Name }
             });
 
             var result = await _userService.DeleteUserByIdAsync(userId, cancellationToken);
 
             result.Should().NotBeNull();
-            result.Id.Should().Be(userId);
             result.UserName.Should().Be("testuser");
         }
 

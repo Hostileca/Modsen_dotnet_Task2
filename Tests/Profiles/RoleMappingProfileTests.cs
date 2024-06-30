@@ -33,7 +33,6 @@ namespace Tests.Profiles
 
             var roleReadDto = _mapper.Map<RoleReadDto>(role);
 
-            Assert.Equal(role.Id, roleReadDto.Id);
             Assert.Equal(role.Name, roleReadDto.Name);
         }
     }

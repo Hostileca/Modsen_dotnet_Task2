@@ -29,23 +29,21 @@ namespace Tests.Profiles
         [Fact]
         public void OrderCreateDto_To_Order_Mapping()
         {
-            var orderItemCreateDto = new OrderItemCreateDto
+            var orderItemCreateDto = new OrderItemCreateNewOrderDto
             {
                 Amount = 5,
-                OrderId = Guid.NewGuid(),
                 ProductId = Guid.NewGuid()
             };
 
             var orderCreateDto = new OrderCreateDto
             {
-                OrderItems = new List<OrderItemCreateDto> { orderItemCreateDto }
+                OrderItems = new List<OrderItemCreateNewOrderDto> { orderItemCreateDto }
             };
 
             var order = _mapper.Map<Order>(orderCreateDto);
 
             Assert.Single(order.OrderItems);
             Assert.Equal(orderItemCreateDto.Amount, order.OrderItems.First().Amount);
-            Assert.Equal(orderItemCreateDto.OrderId, order.OrderItems.First().OrderId);
             Assert.Equal(orderItemCreateDto.ProductId, order.OrderItems.First().ProductId);
         }
 

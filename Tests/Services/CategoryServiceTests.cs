@@ -22,11 +22,11 @@ namespace Tests.Services
         {
             var createDto = new CategoryCreateDto { Name = "Test Category" };
             var category = new Category { Id = Guid.NewGuid(), Name = createDto.Name };
-            var expectedReadDto = new CategoryDetailedReadDto { Id = category.Id, Name = category.Name };
+            var expectedReadDto = new CategoryReadDto { Id = category.Id, Name = category.Name };
 
 
             _mockMapper.Setup(m => m.Map<Category>(createDto)).Returns(category);
-            _mockMapper.Setup(m => m.Map<CategoryDetailedReadDto>(category)).Returns(expectedReadDto);
+            _mockMapper.Setup(m => m.Map<CategoryReadDto>(category)).Returns(expectedReadDto);
             _mockRepository.Setup(repo => repo.AddAsync(category, cancellationToken)).Returns(Task.CompletedTask);
             _mockRepository.Setup(repo => repo.SaveChangesAsync(cancellationToken)).Returns(Task.CompletedTask);
 
@@ -103,12 +103,12 @@ namespace Tests.Services
             var existingCategory = new Category { Id = categoryId, Name = "Existing Category" };
             var updatedDto = new CategoryUpdateDto { Id = categoryId, Name = "Updated Category" };
             var updatedCategory = new Category { Id = categoryId, Name = updatedDto.Name };
-            var expectedReadDto = new CategoryDetailedReadDto { Id = updatedCategory.Id, Name = updatedCategory.Name };
+            var expectedReadDto = new CategoryReadDto { Id = updatedCategory.Id, Name = updatedCategory.Name };
 
             _mockRepository.Setup(repo => repo.GetByIdAsync(categoryId, cancellationToken)).ReturnsAsync(existingCategory);
             _mockMapper.Setup(m => m.Map(updatedDto, existingCategory)).Returns(updatedCategory);
             _mockRepository.Setup(repo => repo.SaveChangesAsync(cancellationToken)).Returns(Task.CompletedTask);
-            _mockMapper.Setup(m => m.Map<CategoryDetailedReadDto>(updatedCategory)).Returns(expectedReadDto);
+            _mockMapper.Setup(m => m.Map<CategoryReadDto>(updatedCategory)).Returns(expectedReadDto);
 
             var result = await _categoryService.UpdateCategoryAsync(updatedDto);
 

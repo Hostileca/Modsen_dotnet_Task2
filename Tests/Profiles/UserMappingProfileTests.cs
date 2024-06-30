@@ -73,9 +73,7 @@ namespace Tests.Profiles
 
             var userReadDto = _mapper.Map<UserReadDto>(user);
 
-            Assert.Equal(user.Id, userReadDto.Id);
             Assert.Equal(user.UserName, userReadDto.UserName);
-            Assert.Equal(user.Role.Id, userReadDto.Role.Id);
             Assert.Equal(user.Role.Name, userReadDto.Role.Name);
         }
     }

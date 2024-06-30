@@ -1,5 +1,5 @@
-﻿using BusinessLogicLayer.Dtos.Categories;
-using BusinessLogicLayer.Dtos.Products;
+﻿using BusinessLogicLayer.Dtos.Products;
+using BusinessLogicLayer.Dtos.Categories;
 using System.Linq.Expressions;
 
 namespace Tests.Services
